@@ -1099,19 +1099,23 @@ body.dark-theme .mobile-nav-link.active {
    ========================================================================== */
 body.dark-theme .login-page,
 body.dark-theme .register-page {
-  background: #090d16 !important;
+  background: radial-gradient(circle at top right, rgba(168, 85, 247, 0.08), transparent 45%),
+              radial-gradient(circle at bottom left, rgba(6, 182, 212, 0.08), transparent 45%),
+              #090d16 !important;
   color: #f8fafc !important;
 }
 
 body.dark-theme .login-form-section,
 body.dark-theme .register-form-section {
   background: #090d16 !important;
-  box-shadow: 12px 0 50px rgba(0, 0, 0, 0.4) !important;
+  box-shadow: 12px 0 50px rgba(0, 0, 0, 0.5) !important;
+  border-right: 1px solid rgba(168, 85, 247, 0.15) !important;
 }
 
 body.dark-theme .login-brand-icon,
 body.dark-theme .register-brand-icon {
-  background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%) !important;
+  background: linear-gradient(135deg, #00d2ff 0%, #0066ff 100%) !important;
+  box-shadow: 0 0 20px rgba(0, 210, 255, 0.5), 0 0 8px rgba(168, 85, 247, 0.3) !important;
 }
 
 body.dark-theme .brand-text {
@@ -1124,14 +1128,83 @@ body.dark-theme .brand-tagline {
 
 body.dark-theme .greeting-title {
   color: #ffffff !important;
+  animation: title-fade-in 0.8s ease-out both;
+  text-shadow: 0 0 10px rgba(168, 85, 247, 0.45) !important; /* purple neon glow on title & moon icon */
+}
+
+@keyframes title-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 body.dark-theme .greeting-subtitle {
   color: #94a3b8 !important;
 }
 
+/* Custom Input Styling (Email, Password fields) */
+body.dark-theme .custom-input .v-field {
+  background-color: #121824 !important; /* dark grey-blue background */
+  color: #ffffff !important;
+}
+
+body.dark-theme .custom-input .v-field__outline {
+  color: rgba(168, 85, 247, 0.25) !important; /* purple neon outline touch */
+}
+
+body.dark-theme .custom-input .v-field--focused .v-field__outline {
+  color: #00d2ff !important; /* cyan glow border when focused */
+  opacity: 1 !important;
+}
+
+body.dark-theme .custom-input .v-field--focused {
+  box-shadow: 0 0 12px rgba(6, 182, 212, 0.35) !important;
+}
+
+body.dark-theme .custom-input input {
+  color: #ffffff !important;
+}
+
 body.dark-theme .input-label {
   color: #94a3b8 !important;
+}
+
+body.dark-theme .input-hint {
+  color: #64748b !important;
+}
+
+/* Submit Button - neon blue, pulsing glow, below reflection */
+body.dark-theme .submit-btn {
+  background: linear-gradient(135deg, #06b6d4 0%, #2563eb 100%) !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  border: 1px solid rgba(6, 182, 212, 0.35) !important;
+  box-shadow: 0 0 16px rgba(6, 182, 212, 0.45), 0 12px 24px -10px rgba(37, 99, 235, 0.55) !important;
+  -webkit-box-reflect: below 5px linear-gradient(transparent, rgba(0, 0, 0, 0.15)) !important;
+}
+
+body.dark-theme .submit-btn:hover {
+  background: linear-gradient(135deg, #00d2ff 0%, #1d4ed8 100%) !important;
+  box-shadow: 0 0 24px rgba(0, 210, 255, 0.65), 0 14px 28px -6px rgba(29, 78, 216, 0.65) !important;
+  transform: translateY(-2px);
+}
+
+/* Google Login button - white background, subtle blue border */
+body.dark-theme .google-btn {
+  background: #ffffff !important;
+  color: #1e293b !important;
+  border: 2px solid rgba(37, 99, 235, 0.4) !important;
+  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.12) !important;
+}
+
+body.dark-theme .google-btn:hover {
+  border-color: rgba(37, 99, 235, 0.8) !important;
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.25) !important;
 }
 
 body.dark-theme .remember-forgot,
@@ -1152,8 +1225,32 @@ body.dark-theme .register-link {
   color: #3b82f6 !important;
 }
 
+/* Floating background icons */
 body.dark-theme .bg-floating-icon {
-  color: rgba(168, 85, 247, 0.15) !important;
+  color: rgba(6, 182, 212, 0.2) !important;
+  filter: drop-shadow(0 0 6px rgba(6, 182, 212, 0.15)) !important;
+}
+
+/* Visual illustration container (right side) glowing drop shadow float */
+body.dark-theme .illustration-container {
+  filter: drop-shadow(0 0 35px rgba(6, 182, 212, 0.22)) drop-shadow(0 0 15px rgba(168, 85, 247, 0.12)) !important;
+  animation: visual-glow-float 6s infinite ease-in-out alternate !important;
+  transition: transform 0.5s ease !important;
+}
+
+body.dark-theme .illustration-container:hover {
+  transform: scale(1.05);
+}
+
+@keyframes visual-glow-float {
+  0% {
+    transform: translateY(0);
+    filter: drop-shadow(0 0 25px rgba(6, 182, 212, 0.18)) drop-shadow(0 0 10px rgba(168, 85, 247, 0.08)) !important;
+  }
+  100% {
+    transform: translateY(-8px);
+    filter: drop-shadow(0 0 45px rgba(6, 182, 212, 0.35)) drop-shadow(0 0 25px rgba(168, 85, 247, 0.25)) !important;
+  }
 }
 
 /* Upgraded sequence number badge styling in Dark Mode */
