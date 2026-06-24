@@ -3,9 +3,11 @@
     <v-main>
       <div class="login-page">
         <!-- Interactive loading bar at the very top -->
-        <div class="loading-bar-wrapper" v-if="loading">
-          <div class="loading-bar-inner"></div>
-        </div>
+        <transition name="fade">
+          <div class="loading-bar-wrapper" v-if="loading">
+            <div class="loading-bar-inner"></div>
+          </div>
+        </transition>
 
         <main class="login-shell">
           <!-- Left: Form Section -->
@@ -477,24 +479,30 @@ function showGoogleMessage() {
   top: 0;
   left: 0;
   width: 100%;
-  height: 4px;
-  background: rgba(37, 99, 235, 0.1);
+  height: 3px;
+  background: rgba(37, 99, 235, 0.05);
   z-index: 100;
   overflow: hidden;
 }
 
 .loading-bar-inner {
   height: 100%;
-  width: 30%;
-  background: linear-gradient(90deg, #2563EB, #06B6D4, #2563EB);
-  border-radius: 99px;
-  animation: bar-slide 1.5s infinite ease-in-out;
+  width: 35%;
+  background: linear-gradient(90deg, transparent, #2563EB, #06B6D4, #2563EB, transparent);
+  animation: bar-slide 1.2s infinite linear;
 }
 
 @keyframes bar-slide {
-  0% { left: -30%; width: 30%; }
-  50% { width: 50%; }
-  100% { left: 100%; width: 30%; }
+  0% { left: -35%; }
+  100% { left: 100%; }
+}
+
+/* Fade transition for loading completion */
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.4s ease;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
 }
 
 .login-shell {
