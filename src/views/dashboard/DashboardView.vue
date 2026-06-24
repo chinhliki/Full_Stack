@@ -13,6 +13,7 @@
         variant="tonal"
         rounded="xl"
         class="font-weight-bold"
+        :loading="loading"
         @click="loadDashboard"
       >
         Tải lại số liệu
@@ -78,8 +79,15 @@
       </v-col>
     </v-row>
 
-    <!-- Top Books Table -->
-    <v-card class="table-card mt-6" rounded="xl">
+    <v-card class="table-card mt-6" :class="{ 'table-card-loading': loading }" rounded="xl">
+      <v-progress-linear
+        v-show="loading"
+        indeterminate
+        color="primary"
+        height="3"
+        class="position-absolute"
+        style="z-index: 2; top: 0; left: 0; right: 0;"
+      />
       <div class="pa-5 border-bottom bg-gradient-title d-flex align-center">
         <v-icon icon="mdi-fire" color="orange" class="mr-2" />
         <v-card-title class="pa-0 font-weight-black text-secondary text-h6">
@@ -120,6 +128,7 @@
 import { onMounted, ref } from 'vue'
 import { reportApi } from '../../api/reportApi'
 
+const loading = ref(false)
 const dashboard = ref({
   totalReaders: 0,
   totalBorrowed: 0,
@@ -130,11 +139,14 @@ const dashboard = ref({
 })
 
 async function loadDashboard() {
+  loading.value = true
   try {
     const res = await reportApi.dashboard()
     dashboard.value = res.data
   } catch (err) {
     console.error('Không tải được số liệu dashboard:', err)
+  } finally {
+    loading.value = false
   }
 }
 

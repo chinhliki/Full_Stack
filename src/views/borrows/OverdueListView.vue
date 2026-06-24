@@ -168,7 +168,15 @@
       </v-row>
     </v-card>
 
-    <v-card class="table-card">
+    <v-card class="table-card" :class="{ 'table-card-loading': loading }">
+      <v-progress-linear
+        v-show="loading"
+        indeterminate
+        color="primary"
+        height="3"
+        class="position-absolute"
+        style="z-index: 2; top: 0; left: 0; right: 0;"
+      />
       <div class="table-scroll">
         <v-table>
           <thead>

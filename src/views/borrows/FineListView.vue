@@ -47,7 +47,15 @@
       </v-col>
     </v-row>
 
-    <v-card>
+    <v-card class="table-card" :class="{ 'table-card-loading': loading }">
+      <v-progress-linear
+        v-show="loading"
+        indeterminate
+        color="primary"
+        height="3"
+        class="position-absolute"
+        style="z-index: 2; top: 0; left: 0; right: 0;"
+      />
       <v-table>
         <thead>
           <tr>
@@ -110,21 +118,25 @@ const fines = ref([])
 const message = ref('')
 const success = ref(true)
 const loadingId = ref('')
+const loading = ref(false)
 
 const totalUnpaidFine = computed(() => {
   return fines.value.reduce((sum, item) => sum + Number(item.fineAmount || 0), 0)
 })
 
 async function loadFines() {
+  loading.value = true
   message.value = ''
 
   try {
-    const res = await borrowApi.getFines()
-    fines.value = res.data
+     const res = await borrowApi.getFines()
+     fines.value = res.data
   } catch (err) {
     success.value = false
     message.value = err.response?.data?.message || 'Không tải được danh sách công nợ phí phạt'
     console.error(err.response || err)
+  } finally {
+    loading.value = false
   }
 }
 
