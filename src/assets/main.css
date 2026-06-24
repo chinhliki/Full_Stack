@@ -797,61 +797,53 @@ body.dark-theme .content-shell {
 /* Theme Toggle Button Style with Dynamic Neon Glowing */
 .theme-toggle-btn {
   position: relative;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
-.theme-toggle-btn .v-icon {
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease, color 0.3s ease !important;
-}
-
-/* Light Mode: moon icon in dark blue with golden glow on hover */
+/* Light Mode Sun/Moon icon: deep blue color and yellow glow on hover */
 body:not(.dark-theme) .theme-toggle-btn {
-  color: #1e3a8a !important; /* Xanh đậm */
+  color: #1e3a8a !important;
+  background: rgba(30, 58, 138, 0.07) !important;
   border: 1px solid rgba(30, 58, 138, 0.15) !important;
-  background: rgba(30, 58, 138, 0.04) !important;
+  border-radius: 50% !important;
+  box-shadow: 0 2px 8px rgba(30, 58, 138, 0.05) !important;
 }
 
 body:not(.dark-theme) .theme-toggle-btn:hover {
-  color: #d97706 !important; /* Vàng đậm */
-  border-color: rgba(217, 119, 6, 0.45) !important;
-  background: rgba(217, 119, 6, 0.08) !important;
-  box-shadow: 0 0 14px rgba(217, 119, 6, 0.3) !important;
+  color: #1e3a8a !important;
+  transform: rotate(15deg) scale(1.08) !important;
+  filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.8)) !important;
+  background: rgba(245, 158, 11, 0.12) !important;
+  border-color: rgba(245, 158, 11, 0.4) !important;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15) !important;
 }
 
-body:not(.dark-theme) .theme-toggle-btn:hover .v-icon {
-  transform: rotate(15deg) scale(1.1);
-  filter: drop-shadow(0 0 6px rgba(217, 119, 6, 0.65)) !important;
-}
-
-/* Dark Mode: sun icon in bright yellow-white with purple neon glow border, brighter background, and pulsing */
+/* Dark Mode Sun/Moon icon: yellow-white color and pulsing neon glow */
 body.dark-theme .theme-toggle-btn {
-  color: #fef08a !important; /* Vàng sáng / Trắng ánh vàng */
-  border: 1px solid rgba(168, 85, 247, 0.45) !important;
-  background: #141b2d !important; /* Độ sáng hơn 5-10% so với nền chính #090d16 để tăng tương phản, tránh bị chìm */
-  animation: neon-glow-pulse 2s infinite ease-in-out;
+  color: #fef08a !important;
+  background: #141b2c !important; /* 8% brighter than #090d16 main background */
+  border: 1px solid rgba(168, 85, 247, 0.45) !important; /* neon purple border */
+  border-radius: 50% !important;
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.25) !important;
+  animation: neon-glow-pulse 2s infinite ease-in-out !important; /* pulse every 2 seconds */
 }
 
 body.dark-theme .theme-toggle-btn:hover {
-  animation-play-state: paused;
-  background: #1c273f !important; /* Tăng độ sáng hơn nữa khi hover */
-  border-color: rgba(6, 182, 212, 0.65) !important;
-  box-shadow: 0 0 18px rgba(6, 182, 212, 0.5), inset 0 0 10px rgba(6, 182, 212, 0.25) !important;
-}
-
-body.dark-theme .theme-toggle-btn:hover .v-icon {
-  transform: rotate(15deg) scale(1.1);
-  filter: drop-shadow(0 0 8px rgba(6, 182, 212, 0.8)) !important;
+  background: #1b243a !important; /* even brighter */
+  transform: rotate(15deg) scale(1.08) !important;
+  border-color: rgba(168, 85, 247, 0.65) !important;
+  box-shadow: 0 0 18px rgba(168, 85, 247, 0.55), 0 0 8px rgba(6, 182, 212, 0.3) !important;
 }
 
 @keyframes neon-glow-pulse {
   0%, 100% {
-    box-shadow: 0 0 6px rgba(168, 85, 247, 0.22), inset 0 0 4px rgba(168, 85, 247, 0.08) !important;
-    filter: drop-shadow(0 0 3px rgba(168, 85, 247, 0.45)) drop-shadow(0 0 5px rgba(6, 182, 212, 0.25));
+    box-shadow: 0 0 8px rgba(168, 85, 247, 0.25), 0 0 3px rgba(6, 182, 212, 0.15) !important;
+    filter: drop-shadow(0 0 1px rgba(254, 240, 138, 0.25));
     transform: scale(1);
   }
   50% {
-    box-shadow: 0 0 14px rgba(168, 85, 247, 0.45), inset 0 0 8px rgba(168, 85, 247, 0.16) !important;
-    filter: drop-shadow(0 0 7px rgba(168, 85, 247, 0.85)) drop-shadow(0 0 12px rgba(6, 182, 212, 0.65));
+    box-shadow: 0 0 16px rgba(168, 85, 247, 0.55), 0 0 8px rgba(6, 182, 212, 0.35) !important;
+    filter: drop-shadow(0 0 4px rgba(254, 240, 138, 0.65));
     transform: scale(1.06);
   }
 }
