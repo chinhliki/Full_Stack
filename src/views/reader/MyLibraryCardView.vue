@@ -41,10 +41,10 @@
 
     <v-row v-if="card">
       <v-col cols="12" lg="5">
-        <v-card class="library-card pa-6">
+        <v-card class="library-card-premium pa-6">
           <div class="d-flex align-center justify-space-between mb-8">
             <div>
-              <div class="text-caption text-white opacity-80">
+              <div class="text-caption text-white opacity-80 card-title-glow">
                 DIGITAL LIBRARY CARD
               </div>
               <div class="text-h5 font-weight-black text-white mt-1">
@@ -52,22 +52,22 @@
               </div>
             </div>
 
-            <v-avatar color="white" size="52">
+            <v-avatar color="white" size="52" class="card-icon-glow">
               <v-icon icon="mdi-library" color="primary" size="30" />
             </v-avatar>
           </div>
 
-          <div class="text-caption text-white opacity-80">
+          <div class="text-caption text-white opacity-80 card-title-glow">
             SỐ THẺ THƯ VIỆN
           </div>
 
-          <div class="card-number mt-2">
+          <div class="card-number-glow mt-2">
             {{ card.cardNumber }}
           </div>
 
           <v-row class="mt-7">
             <v-col cols="7">
-              <div class="text-caption text-white opacity-80">
+              <div class="text-caption text-white opacity-80 card-title-glow">
                 CHỦ THẺ
               </div>
               <div class="text-white font-weight-bold mt-1">
@@ -76,7 +76,7 @@
             </v-col>
 
             <v-col cols="5">
-              <div class="text-caption text-white opacity-80">
+              <div class="text-caption text-white opacity-80 card-title-glow">
                 TRẠNG THÁI
               </div>
               <v-chip
@@ -92,7 +92,7 @@
 
           <v-row class="mt-4">
             <v-col cols="6">
-              <div class="text-caption text-white opacity-80">
+              <div class="text-caption text-white opacity-80 card-title-glow">
                 NGÀY CẤP
               </div>
               <div class="text-white font-weight-bold mt-1">
@@ -101,7 +101,7 @@
             </v-col>
 
             <v-col cols="6">
-              <div class="text-caption text-white opacity-80">
+              <div class="text-caption text-white opacity-80 card-title-glow">
                 HẾT HẠN
               </div>
               <div class="text-white font-weight-bold mt-1">
@@ -170,50 +170,52 @@
 
           <v-row>
             <v-col cols="12" md="6">
-              <div class="info-box">
-                <div class="info-label">Họ tên</div>
-                <div class="info-value">{{ card.fullName }}</div>
+              <div class="info-box-premium">
+                <div class="info-label-premium">Họ tên</div>
+                <div class="info-value-premium">{{ card.fullName }}</div>
               </div>
             </v-col>
 
             <v-col cols="12" md="6">
-              <div class="info-box">
-                <div class="info-label">Email</div>
-                <div class="info-value">{{ card.email }}</div>
+              <div class="info-box-premium">
+                <div class="info-label-premium">Email</div>
+                <div class="info-value-premium">{{ card.email }}</div>
               </div>
             </v-col>
 
             <v-col cols="12" md="6">
-              <div class="info-box">
-                <div class="info-label">Số thẻ</div>
-                <div class="info-value">{{ card.cardNumber }}</div>
+              <div class="info-box-premium">
+                <div class="info-label-premium">Số thẻ</div>
+                <div class="info-value-premium">{{ card.cardNumber }}</div>
               </div>
             </v-col>
 
             <v-col cols="12" md="6">
-              <div class="info-box">
-                <div class="info-label">Trạng thái thẻ</div>
-                <v-chip
-                  :color="card.status === 'Active' ? 'success' : 'error'"
-                  size="small"
-                  variant="tonal"
-                >
-                  {{ getCardStatusText(card.status) }}
-                </v-chip>
+              <div class="info-box-premium">
+                <div class="info-label-premium">Trạng thái thẻ</div>
+                <div class="info-value-premium mt-1">
+                  <v-chip
+                    :color="card.status === 'Active' ? 'success' : 'error'"
+                    size="small"
+                    variant="tonal"
+                  >
+                    {{ getCardStatusText(card.status) }}
+                  </v-chip>
+                </div>
               </div>
             </v-col>
 
             <v-col cols="12" md="6">
-              <div class="info-box">
-                <div class="info-label">Ngày cấp</div>
-                <div class="info-value">{{ formatDate(card.issuedDate) }}</div>
+              <div class="info-box-premium">
+                <div class="info-label-premium">Ngày cấp</div>
+                <div class="info-value-premium">{{ formatDate(card.issuedDate) }}</div>
               </div>
             </v-col>
 
             <v-col cols="12" md="6">
-              <div class="info-box">
-                <div class="info-label">Ngày hết hạn</div>
-                <div class="info-value">{{ formatDate(card.expiredDate) }}</div>
+              <div class="info-box-premium">
+                <div class="info-label-premium">Ngày hết hạn</div>
+                <div class="info-value-premium">{{ formatDate(card.expiredDate) }}</div>
               </div>
             </v-col>
           </v-row>
@@ -375,72 +377,5 @@ onMounted(loadMyCard)
 </script>
 
 <style scoped>
-.library-card {
-  min-height: 340px;
-  border-radius: 28px !important;
-  color: white;
-  overflow: hidden;
-  position: relative;
-  background:
-    radial-gradient(circle at top right, rgba(255, 255, 255, 0.28), transparent 28%),
-    radial-gradient(circle at bottom left, rgba(6, 182, 212, 0.35), transparent 32%),
-    linear-gradient(135deg, #1d4ed8 0%, #0f172a 100%) !important;
-  box-shadow: 0 28px 70px rgba(30, 64, 175, 0.32) !important;
-}
-
-.library-card::before {
-  content: '';
-  position: absolute;
-  right: -60px;
-  bottom: -60px;
-  width: 180px;
-  height: 180px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.12);
-}
-
-.library-card::after {
-  content: '';
-  position: absolute;
-  left: -40px;
-  top: 120px;
-  width: 140px;
-  height: 140px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.library-card > * {
-  position: relative;
-  z-index: 2;
-}
-
-.card-number {
-  color: white;
-  font-size: 26px;
-  font-weight: 900;
-  letter-spacing: 0.08em;
-}
-
-.info-box {
-  min-height: 88px;
-  padding: 16px;
-  border-radius: 18px;
-  background: #f8fafc;
-  border: 1px solid #eef2f7;
-}
-
-.info-label {
-  color: #64748b;
-  font-size: 13px;
-  font-weight: 700;
-  margin-bottom: 6px;
-}
-
-.info-value {
-  color: #0f172a;
-  font-size: 15px;
-  font-weight: 700;
-  word-break: break-word;
-}
+/* No overridden styles needed as premium card and glassmorphism styles are global in main.css */
 </style>

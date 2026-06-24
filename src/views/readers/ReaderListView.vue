@@ -414,7 +414,7 @@
       </div>
     </v-card>
 
-    <v-dialog v-model="cardDialog" max-width="760">
+    <v-dialog v-model="cardDialog" max-width="780" transition="dialog-scale-transition">
       <v-card v-if="selectedCard">
         <v-card-title class="d-flex align-center">
           <v-icon icon="mdi-card-account-details" color="primary" class="mr-2" />
@@ -430,10 +430,10 @@
         <v-card-text>
           <v-row>
             <v-col cols="12" md="5">
-              <v-card class="reader-card pa-5">
+              <v-card class="library-card-premium pa-6">
                 <div class="d-flex align-center justify-space-between mb-7">
                   <div>
-                    <div class="text-caption text-white opacity-80">
+                    <div class="text-caption text-white opacity-80 card-title-glow">
                       LIBRARY CARD
                     </div>
                     <div class="text-h6 font-weight-black text-white">
@@ -441,21 +441,21 @@
                     </div>
                   </div>
 
-                  <v-avatar color="white" size="46">
+                  <v-avatar color="white" size="46" class="card-icon-glow">
                     <v-icon icon="mdi-library" color="primary" />
                   </v-avatar>
                 </div>
 
-                <div class="text-caption text-white opacity-80">
+                <div class="text-caption text-white opacity-80 card-title-glow">
                   SỐ THẺ
                 </div>
 
-                <div class="reader-card-number">
+                <div class="card-number-glow">
                   {{ selectedCard.cardNumber }}
                 </div>
 
                 <div class="mt-7">
-                  <div class="text-caption text-white opacity-80">
+                  <div class="text-caption text-white opacity-80 card-title-glow">
                     CHỦ THẺ
                   </div>
                   <div class="text-white font-weight-bold">
@@ -464,7 +464,7 @@
                 </div>
 
                 <div class="mt-5">
-                  <div class="text-caption text-white opacity-80">
+                  <div class="text-caption text-white opacity-80 card-title-glow">
                     TRẠNG THÁI
                   </div>
 
@@ -483,46 +483,52 @@
             <v-col cols="12" md="7">
               <v-row>
                 <v-col cols="12" md="6">
-                  <div class="info-box">
-                    <div class="info-label">Độc giả</div>
-                    <div class="info-value">{{ selectedCard.fullName }}</div>
+                  <div class="info-box-premium">
+                    <div class="info-label-premium">Độc giả</div>
+                    <div class="info-value-premium">{{ selectedCard.fullName }}</div>
                   </div>
                 </v-col>
 
                 <v-col cols="12" md="6">
-                  <div class="info-box">
-                    <div class="info-label">Email</div>
-                    <div class="info-value">{{ selectedCard.email }}</div>
+                  <div class="info-box-premium">
+                    <div class="info-label-premium">Email</div>
+                    <div class="info-value-premium">{{ selectedCard.email }}</div>
                   </div>
                 </v-col>
 
                 <v-col cols="12" md="6">
-                  <div class="info-box">
-                    <div class="info-label">Số thẻ</div>
-                    <div class="info-value">{{ selectedCard.cardNumber }}</div>
+                  <div class="info-box-premium">
+                    <div class="info-label-premium">Số thẻ</div>
+                    <div class="info-value-premium">{{ selectedCard.cardNumber }}</div>
                   </div>
                 </v-col>
 
                 <v-col cols="12" md="6">
-                  <div class="info-box">
-                    <div class="info-label">Trạng thái</div>
-                    <div class="info-value">
-                      {{ getCardStatusText(selectedCard.status) }}
+                  <div class="info-box-premium">
+                    <div class="info-label-premium">Trạng thái</div>
+                    <div class="info-value-premium mt-1">
+                      <v-chip
+                        :color="selectedCard.status === 'Active' ? 'success' : 'error'"
+                        size="small"
+                        variant="tonal"
+                      >
+                        {{ getCardStatusText(selectedCard.status) }}
+                      </v-chip>
                     </div>
                   </div>
                 </v-col>
 
                 <v-col cols="12" md="6">
-                  <div class="info-box">
-                    <div class="info-label">Ngày cấp</div>
-                    <div class="info-value">{{ formatDate(selectedCard.issuedDate) }}</div>
+                  <div class="info-box-premium">
+                    <div class="info-label-premium">Ngày cấp</div>
+                    <div class="info-value-premium">{{ formatDate(selectedCard.issuedDate) }}</div>
                   </div>
                 </v-col>
 
                 <v-col cols="12" md="6">
-                  <div class="info-box">
-                    <div class="info-label">Ngày hết hạn</div>
-                    <div class="info-value">{{ formatDate(selectedCard.expiredDate) }}</div>
+                  <div class="info-box-premium">
+                    <div class="info-label-premium">Ngày hết hạn</div>
+                    <div class="info-value-premium">{{ formatDate(selectedCard.expiredDate) }}</div>
                   </div>
                 </v-col>
               </v-row>
@@ -906,62 +912,4 @@ onMounted(loadReaders)
   text-overflow: ellipsis;
 }
 
-.reader-card {
-  min-height: 300px;
-  border-radius: 28px !important;
-  color: white;
-  overflow: hidden;
-  position: relative;
-  background:
-    radial-gradient(circle at top right, rgba(255, 255, 255, 0.28), transparent 28%),
-    radial-gradient(circle at bottom left, rgba(6, 182, 212, 0.35), transparent 32%),
-    linear-gradient(135deg, #1d4ed8 0%, #0f172a 100%) !important;
-  box-shadow: 0 28px 70px rgba(30, 64, 175, 0.28) !important;
-}
-
-.reader-card::before {
-  content: '';
-  position: absolute;
-  right: -60px;
-  bottom: -60px;
-  width: 180px;
-  height: 180px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.12);
-}
-
-.reader-card > * {
-  position: relative;
-  z-index: 2;
-}
-
-.reader-card-number {
-  color: white;
-  font-size: 24px;
-  font-weight: 900;
-  letter-spacing: 0.08em;
-  margin-top: 8px;
-}
-
-.info-box {
-  min-height: 88px;
-  padding: 16px;
-  border-radius: 18px;
-  background: #f8fafc;
-  border: 1px solid #eef2f7;
-}
-
-.info-label {
-  color: #64748b;
-  font-size: 13px;
-  font-weight: 700;
-  margin-bottom: 6px;
-}
-
-.info-value {
-  color: #0f172a;
-  font-size: 15px;
-  font-weight: 800;
-  word-break: break-word;
-}
 </style>
