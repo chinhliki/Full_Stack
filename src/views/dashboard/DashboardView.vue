@@ -30,7 +30,7 @@
             <div class="stat-value text-primary">{{ dashboard.totalReaders }}</div>
           </div>
           <v-spacer />
-          <div class="stat-icon-wrapper-glow cyan-glowing-icon">
+          <div class="stat-icon-wrapper-glow info-glowing-icon">
             <v-icon icon="mdi-account-group" size="30" />
           </div>
         </v-card>
