@@ -1,50 +1,114 @@
 <template>
   <div>
-    <h2 class="mb-4">Dashboard thống kê</h2>
+    <!-- Dashboard Header -->
+    <div class="d-flex align-center mb-6">
+      <div>
+        <h2 class="page-title font-weight-black text-secondary">Dashboard Thống Kê</h2>
+        <p class="page-subtitle">Xem nhanh các chỉ số hoạt động của thư viện số</p>
+      </div>
+      <v-spacer />
+      <v-btn
+        color="primary"
+        prepend-icon="mdi-refresh"
+        variant="tonal"
+        rounded="xl"
+        class="font-weight-bold"
+        @click="loadDashboard"
+      >
+        Tải lại số liệu
+      </v-btn>
+    </div>
 
+    <!-- Stats Cards Row -->
     <v-row>
-      <v-col cols="12" md="3">
-        <v-card class="pa-4">
-          <div class="text-subtitle-2">Tổng độc giả</div>
-          <div class="text-h4">{{ dashboard.totalReaders }}</div>
+      <!-- Total Readers -->
+      <v-col cols="12" sm="6" md="3">
+        <v-card class="stat-card pa-5 d-flex align-center" rounded="xl">
+          <div class="stat-info">
+            <div class="stat-label text-uppercase mb-1">Tổng độc giả</div>
+            <div class="stat-value text-primary">{{ dashboard.totalReaders }}</div>
+          </div>
+          <v-spacer />
+          <div class="stat-icon-wrapper-glow cyan-glowing-icon">
+            <v-icon icon="mdi-account-group" size="30" />
+          </div>
         </v-card>
       </v-col>
 
-      <v-col cols="12" md="3">
-        <v-card class="pa-4">
-          <div class="text-subtitle-2">Tổng lượt mượn</div>
-          <div class="text-h4">{{ dashboard.totalBorrowed }}</div>
+      <!-- Total Borrowed -->
+      <v-col cols="12" sm="6" md="3">
+        <v-card class="stat-card pa-5 d-flex align-center" rounded="xl">
+          <div class="stat-info">
+            <div class="stat-label text-uppercase mb-1">Tổng lượt mượn</div>
+            <div class="stat-value text-purple">{{ dashboard.totalBorrowed }}</div>
+          </div>
+          <v-spacer />
+          <div class="stat-icon-wrapper-glow purple-glowing-icon">
+            <v-icon icon="mdi-book-arrow-up-outline" size="30" />
+          </div>
         </v-card>
       </v-col>
 
-      <v-col cols="12" md="3">
-        <v-card class="pa-4">
-          <div class="text-subtitle-2">Tổng lượt trả</div>
-          <div class="text-h4">{{ dashboard.totalReturned }}</div>
+      <!-- Total Returned -->
+      <v-col cols="12" sm="6" md="3">
+        <v-card class="stat-card pa-5 d-flex align-center" rounded="xl">
+          <div class="stat-info">
+            <div class="stat-label text-uppercase mb-1">Tổng lượt trả</div>
+            <div class="stat-value text-teal">{{ dashboard.totalReturned }}</div>
+          </div>
+          <v-spacer />
+          <div class="stat-icon-wrapper-glow teal-glowing-icon">
+            <v-icon icon="mdi-book-arrow-down-outline" size="30" />
+          </div>
         </v-card>
       </v-col>
 
-      <v-col cols="12" md="3">
-        <v-card class="pa-4">
-          <div class="text-subtitle-2">Tổng tiền phạt</div>
-          <div class="text-h4">{{ dashboard.totalFineAmount }}</div>
+      <!-- Total Fines -->
+      <v-col cols="12" sm="6" md="3">
+        <v-card class="stat-card pa-5 d-flex align-center" rounded="xl">
+          <div class="stat-info">
+            <div class="stat-label text-uppercase mb-1">Tổng tiền phạt</div>
+            <div class="stat-value text-amber-darken-3">{{ formatMoney(dashboard.totalFineAmount) }}</div>
+          </div>
+          <v-spacer />
+          <div class="stat-icon-wrapper-glow amber-glowing-icon">
+            <v-icon icon="mdi-cash-multiple" size="30" />
+          </div>
         </v-card>
       </v-col>
     </v-row>
 
-    <v-card class="mt-6">
-      <v-card-title>Top sách phổ biến</v-card-title>
-      <v-table>
+    <!-- Top Books Table -->
+    <v-card class="table-card mt-6" rounded="xl">
+      <div class="pa-5 border-bottom bg-gradient-title d-flex align-center">
+        <v-icon icon="mdi-fire" color="orange" class="mr-2" />
+        <v-card-title class="pa-0 font-weight-black text-secondary text-h6">
+          Top Sách Phổ Biến Nhất
+        </v-card-title>
+      </div>
+
+      <v-table class="premium-table">
         <thead>
           <tr>
             <th>Tên sách</th>
-            <th>Số lượt mượn</th>
+            <th class="text-right">Số lượt mượn</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="book in dashboard.topBooks" :key="book.bookId">
-            <td>{{ book.bookTitle }}</td>
-            <td>{{ book.borrowCount }}</td>
+          <tr v-for="(book, index) in dashboard.topBooks" :key="book.bookId">
+            <td class="font-weight-medium">
+              <v-icon icon="mdi-book-open-outline" size="18" color="primary" class="mr-3 table-book-icon" />
+              <span class="book-rank-badge mr-2" :class="'rank-' + (index + 1)">{{ index + 1 }}</span>
+              {{ book.bookTitle }}
+            </td>
+            <td class="text-right font-weight-black text-secondary">
+              {{ book.borrowCount }} <span class="text-caption text-grey">lượt</span>
+            </td>
+          </tr>
+          <tr v-if="dashboard.topBooks.length === 0">
+            <td colspan="2" class="text-center pa-6 text-grey">
+              Không có dữ liệu thống kê sách phổ biến
+            </td>
           </tr>
         </tbody>
       </v-table>
@@ -66,9 +130,131 @@ const dashboard = ref({
 })
 
 async function loadDashboard() {
-  const res = await reportApi.dashboard()
-  dashboard.value = res.data
+  try {
+    const res = await reportApi.dashboard()
+    dashboard.value = res.data
+  } catch (err) {
+    console.error('Không tải được số liệu dashboard:', err)
+  }
+}
+
+function formatMoney(value) {
+  return new Intl.NumberFormat('vi-VN').format(value || 0) + ' đ'
 }
 
 onMounted(loadDashboard)
 </script>
+
+<style scoped>
+.stat-icon-wrapper-glow {
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cyan-glowing-icon {
+  color: #06B6D4 !important;
+  box-shadow: 0 0 15px rgba(6, 182, 212, 0.15), inset 0 0 10px rgba(6, 182, 212, 0.05);
+  background: rgba(6, 182, 212, 0.05);
+  border: 1px solid rgba(6, 182, 212, 0.2);
+}
+
+.purple-glowing-icon {
+  color: #8B5CF6 !important;
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.15), inset 0 0 10px rgba(139, 92, 246, 0.05);
+  background: rgba(139, 92, 246, 0.05);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.teal-glowing-icon {
+  color: #0D9488 !important;
+  box-shadow: 0 0 15px rgba(13, 148, 136, 0.15), inset 0 0 10px rgba(13, 148, 136, 0.05);
+  background: rgba(13, 148, 136, 0.05);
+  border: 1px solid rgba(13, 148, 136, 0.2);
+}
+
+.amber-glowing-icon {
+  color: #D97706 !important;
+  box-shadow: 0 0 15px rgba(217, 119, 6, 0.15), inset 0 0 10px rgba(217, 119, 6, 0.05);
+  background: rgba(217, 119, 6, 0.05);
+  border: 1px solid rgba(217, 119, 6, 0.2);
+}
+
+/* Card hover interactions boost icons */
+.stat-card:hover .stat-icon-wrapper-glow {
+  transform: scale(1.1);
+}
+.stat-card:hover .cyan-glowing-icon {
+  box-shadow: 0 0 25px rgba(6, 182, 212, 0.35), inset 0 0 12px rgba(6, 182, 212, 0.1);
+  background: rgba(6, 182, 212, 0.1);
+}
+.stat-card:hover .purple-glowing-icon {
+  box-shadow: 0 0 25px rgba(139, 92, 246, 0.35), inset 0 0 12px rgba(139, 92, 246, 0.1);
+  background: rgba(139, 92, 246, 0.1);
+}
+.stat-card:hover .teal-glowing-icon {
+  box-shadow: 0 0 25px rgba(13, 148, 136, 0.35), inset 0 0 12px rgba(13, 148, 136, 0.1);
+  background: rgba(13, 148, 136, 0.1);
+}
+.stat-card:hover .amber-glowing-icon {
+  box-shadow: 0 0 25px rgba(217, 119, 6, 0.35), inset 0 0 12px rgba(217, 119, 6, 0.1);
+  background: rgba(217, 119, 6, 0.1);
+}
+
+.bg-gradient-title {
+  background: linear-gradient(135deg, #EEF2FF 0%, #F5F3FF 100%);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.8) !important;
+}
+
+.premium-table :deep(.v-table__wrapper) {
+  background: linear-gradient(135deg, rgba(238, 242, 255, 0.15) 0%, rgba(245, 243, 255, 0.15) 100%) !important;
+}
+
+.premium-table tbody tr {
+  transition: all 0.25s ease;
+}
+
+.premium-table tbody tr:hover {
+  background: linear-gradient(90deg, rgba(37, 99, 235, 0.04) 0%, rgba(168, 85, 247, 0.04) 100%) !important;
+}
+
+.premium-table tbody tr:hover .table-book-icon {
+  transform: scale(1.2) rotate(10deg);
+  color: #8B5CF6 !important;
+}
+
+.book-rank-badge {
+  display: inline-flex;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+  background: rgba(148, 163, 184, 0.1);
+  color: #64748B;
+}
+
+.rank-1 {
+  background: rgba(251, 191, 36, 0.2);
+  color: #D97706;
+}
+
+.rank-2 {
+  background: rgba(148, 163, 184, 0.2);
+  color: #475569;
+}
+
+.rank-3 {
+  background: rgba(180, 83, 9, 0.2);
+  color: #B45309;
+}
+
+.table-book-icon {
+  transition: all 0.3s ease;
+}
+</style>
