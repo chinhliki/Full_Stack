@@ -146,64 +146,6 @@ onMounted(loadDashboard)
 </script>
 
 <style scoped>
-.stat-icon-wrapper-glow {
-  width: 58px;
-  height: 58px;
-  border-radius: 16px;
-  display: grid;
-  place-items: center;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.cyan-glowing-icon {
-  color: #06B6D4 !important;
-  box-shadow: 0 0 15px rgba(6, 182, 212, 0.15), inset 0 0 10px rgba(6, 182, 212, 0.05);
-  background: rgba(6, 182, 212, 0.05);
-  border: 1px solid rgba(6, 182, 212, 0.2);
-}
-
-.purple-glowing-icon {
-  color: #8B5CF6 !important;
-  box-shadow: 0 0 15px rgba(139, 92, 246, 0.15), inset 0 0 10px rgba(139, 92, 246, 0.05);
-  background: rgba(139, 92, 246, 0.05);
-  border: 1px solid rgba(139, 92, 246, 0.2);
-}
-
-.teal-glowing-icon {
-  color: #0D9488 !important;
-  box-shadow: 0 0 15px rgba(13, 148, 136, 0.15), inset 0 0 10px rgba(13, 148, 136, 0.05);
-  background: rgba(13, 148, 136, 0.05);
-  border: 1px solid rgba(13, 148, 136, 0.2);
-}
-
-.amber-glowing-icon {
-  color: #D97706 !important;
-  box-shadow: 0 0 15px rgba(217, 119, 6, 0.15), inset 0 0 10px rgba(217, 119, 6, 0.05);
-  background: rgba(217, 119, 6, 0.05);
-  border: 1px solid rgba(217, 119, 6, 0.2);
-}
-
-/* Card hover interactions boost icons */
-.stat-card:hover .stat-icon-wrapper-glow {
-  transform: scale(1.1);
-}
-.stat-card:hover .cyan-glowing-icon {
-  box-shadow: 0 0 25px rgba(6, 182, 212, 0.35), inset 0 0 12px rgba(6, 182, 212, 0.1);
-  background: rgba(6, 182, 212, 0.1);
-}
-.stat-card:hover .purple-glowing-icon {
-  box-shadow: 0 0 25px rgba(139, 92, 246, 0.35), inset 0 0 12px rgba(139, 92, 246, 0.1);
-  background: rgba(139, 92, 246, 0.1);
-}
-.stat-card:hover .teal-glowing-icon {
-  box-shadow: 0 0 25px rgba(13, 148, 136, 0.35), inset 0 0 12px rgba(13, 148, 136, 0.1);
-  background: rgba(13, 148, 136, 0.1);
-}
-.stat-card:hover .amber-glowing-icon {
-  box-shadow: 0 0 25px rgba(217, 119, 6, 0.35), inset 0 0 12px rgba(217, 119, 6, 0.1);
-  background: rgba(217, 119, 6, 0.1);
-}
-
 .bg-gradient-title {
   background: linear-gradient(135deg, #EEF2FF 0%, #F5F3FF 100%);
   border-bottom: 1px solid rgba(226, 232, 240, 0.8) !important;

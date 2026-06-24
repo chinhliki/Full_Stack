@@ -20,17 +20,29 @@
     </v-alert>
 
     <v-row class="mb-4">
-      <v-col cols="12" md="4">
-        <v-card class="pa-4">
-          <div class="text-subtitle-2">Tổng số phiếu chưa thu phạt</div>
-          <div class="text-h4">{{ fines.length }}</div>
+      <v-col cols="12" sm="6" md="4">
+        <v-card class="stat-card pa-5 d-flex align-center" rounded="xl">
+          <div class="stat-info">
+            <div class="stat-label text-uppercase mb-1">Phiếu chưa thu phạt</div>
+            <div class="stat-value text-amber-darken-3 font-weight-black text-h4">{{ fines.length }}</div>
+          </div>
+          <v-spacer />
+          <div class="stat-icon-wrapper-glow amber-glowing-icon">
+            <v-icon icon="mdi-file-alert-outline" size="30" />
+          </div>
         </v-card>
       </v-col>
 
-      <v-col cols="12" md="4">
-        <v-card class="pa-4">
-          <div class="text-subtitle-2">Tổng tiền phạt chưa thu</div>
-          <div class="text-h4">{{ totalUnpaidFine }}</div>
+      <v-col cols="12" sm="6" md="4">
+        <v-card class="stat-card pa-5 d-flex align-center" rounded="xl">
+          <div class="stat-info">
+            <div class="stat-label text-uppercase mb-1">Tiền phạt chưa thu</div>
+            <div class="stat-value text-error font-weight-black text-h4">{{ formatMoney(totalUnpaidFine) }}</div>
+          </div>
+          <v-spacer />
+          <div class="stat-icon-wrapper-glow error-glowing-icon">
+            <v-icon icon="mdi-cash-alert" size="30" />
+          </div>
         </v-card>
       </v-col>
     </v-row>

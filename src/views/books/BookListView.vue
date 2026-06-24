@@ -52,62 +52,54 @@
     </v-alert>
 
     <v-row class="mb-5">
-      <v-col cols="12" md="3">
-        <v-card class="stat-card pa-5">
-          <div class="d-flex align-center justify-space-between">
-            <div>
-              <div class="stat-label">Tổng sách</div>
-              <div class="stat-value">{{ books.length }}</div>
-            </div>
-
-            <v-avatar color="primary" variant="tonal" size="54">
-              <v-icon icon="mdi-bookshelf" size="28" />
-            </v-avatar>
+      <v-col cols="12" sm="6" md="3">
+        <v-card class="stat-card pa-5 d-flex align-center" rounded="xl">
+          <div class="stat-info">
+            <div class="stat-label text-uppercase mb-1">Tổng sách</div>
+            <div class="stat-value text-primary font-weight-black text-h4">{{ books.length }}</div>
+          </div>
+          <v-spacer />
+          <div class="stat-icon-wrapper-glow info-glowing-icon">
+            <v-icon icon="mdi-bookshelf" size="30" />
           </div>
         </v-card>
       </v-col>
 
-      <v-col cols="12" md="3">
-        <v-card class="stat-card pa-5">
-          <div class="d-flex align-center justify-space-between">
-            <div>
-              <div class="stat-label">Có thể mượn</div>
-              <div class="stat-value">{{ availableBookCount }}</div>
-            </div>
-
-            <v-avatar color="success" variant="tonal" size="54">
-              <v-icon icon="mdi-book-check" size="28" />
-            </v-avatar>
+      <v-col cols="12" sm="6" md="3">
+        <v-card class="stat-card pa-5 d-flex align-center" rounded="xl">
+          <div class="stat-info">
+            <div class="stat-label text-uppercase mb-1">Có thể mượn</div>
+            <div class="stat-value text-success font-weight-black text-h4">{{ availableBookCount }}</div>
+          </div>
+          <v-spacer />
+          <div class="stat-icon-wrapper-glow success-glowing-icon">
+            <v-icon icon="mdi-book-check" size="30" />
           </div>
         </v-card>
       </v-col>
 
-      <v-col cols="12" md="3">
-        <v-card class="stat-card pa-5">
-          <div class="d-flex align-center justify-space-between">
-            <div>
-              <div class="stat-label">Hết sách</div>
-              <div class="stat-value">{{ unavailableBookCount }}</div>
-            </div>
-
-            <v-avatar color="error" variant="tonal" size="54">
-              <v-icon icon="mdi-book-remove" size="28" />
-            </v-avatar>
+      <v-col cols="12" sm="6" md="3">
+        <v-card class="stat-card pa-5 d-flex align-center" rounded="xl">
+          <div class="stat-info">
+            <div class="stat-label text-uppercase mb-1">Hết sách</div>
+            <div class="stat-value text-error font-weight-black text-h4">{{ unavailableBookCount }}</div>
+          </div>
+          <v-spacer />
+          <div class="stat-icon-wrapper-glow error-glowing-icon">
+            <v-icon icon="mdi-book-remove" size="30" />
           </div>
         </v-card>
       </v-col>
 
-      <v-col cols="12" md="3">
-        <v-card class="stat-card pa-5">
-          <div class="d-flex align-center justify-space-between">
-            <div>
-              <div class="stat-label">Đã chọn</div>
-              <div class="stat-value">{{ selectedBookIds.length }}</div>
-            </div>
-
-            <v-avatar color="info" variant="tonal" size="54">
-              <v-icon icon="mdi-checkbox-marked-circle-outline" size="28" />
-            </v-avatar>
+      <v-col cols="12" sm="6" md="3">
+        <v-card class="stat-card pa-5 d-flex align-center" rounded="xl">
+          <div class="stat-info">
+            <div class="stat-label text-uppercase mb-1">Đã chọn</div>
+            <div class="stat-value text-purple font-weight-black text-h4">{{ selectedBookIds.length }}</div>
+          </div>
+          <v-spacer />
+          <div class="stat-icon-wrapper-glow purple-glowing-icon">
+            <v-icon icon="mdi-checkbox-marked-circle-outline" size="30" />
           </div>
         </v-card>
       </v-col>
