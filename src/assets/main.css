@@ -1377,4 +1377,24 @@ body.dark-theme tr:hover .table-index-badge {
   opacity: 0;
   transform: translateY(-5px);
 }
+
+/* Sidebar Logout Icon styling */
+.sidebar-profile-logout-btn,
+.logout-btn-collapsed.v-btn {
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(168, 85, 247, 0.35) !important;
+  box-shadow: 0 0 6px rgba(168, 85, 247, 0.15) !important;
+  border-radius: 12px !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.sidebar-profile-logout-btn:hover,
+.logout-btn-collapsed.v-btn:hover {
+  background: rgba(245, 158, 11, 0.1) !important;
+  color: #f59e0b !important; /* orange icon on hover */
+  border-color: rgba(245, 158, 11, 0.45) !important; /* orange border on hover */
+  filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.8)) !important; /* soft orange glow */
+  box-shadow: 0 0 15px rgba(245, 158, 11, 0.3) !important;
+}
 

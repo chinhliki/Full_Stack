@@ -126,53 +126,58 @@
       <template #append>
         <!-- Expanded Sidebar Profile -->
         <div class="pa-4" v-if="!rail">
-          <v-tooltip location="top" offset="10">
-            <template #activator="{ props }">
-              <div
-                v-bind="props"
-                class="sidebar-profile-card d-flex align-center pa-3 mb-4"
-              >
-                <!-- Avatar -->
-                <v-avatar size="44" color="rgba(168, 85, 247, 0.25)" class="sidebar-profile-avatar mr-3">
-                  <v-img v-if="auth.user?.avatarUrl" :src="auth.user.avatarUrl" />
-                  <v-icon v-else icon="mdi-account" color="white" />
-                </v-avatar>
-                <!-- Name & Role -->
-                <div class="sidebar-profile-details overflow-hidden">
-                  <transition name="fade-role" mode="out-in">
-                    <div :key="auth.role">
-                      <div class="sidebar-profile-name font-weight-bold text-white text-truncate">
-                        {{ auth.fullName || 'Người dùng' }}
+          <div class="sidebar-profile-row d-flex align-center">
+            <v-tooltip location="top" offset="10">
+              <template #activator="{ props }">
+                <div
+                  v-bind="props"
+                  class="sidebar-profile-card d-flex align-center pa-3 flex-grow-1 mr-2"
+                >
+                  <!-- Avatar -->
+                  <v-avatar size="42" color="rgba(168, 85, 247, 0.25)" class="sidebar-profile-avatar mr-3">
+                    <v-img v-if="auth.user?.avatarUrl" :src="auth.user.avatarUrl" />
+                    <v-icon v-else icon="mdi-account" color="white" />
+                  </v-avatar>
+                  <!-- Name & Role -->
+                  <div class="sidebar-profile-details overflow-hidden">
+                    <transition name="fade-role" mode="out-in">
+                      <div :key="auth.role">
+                        <div class="sidebar-profile-name font-weight-bold text-white text-truncate">
+                          {{ auth.fullName || 'Người dùng' }}
+                        </div>
+                        <div class="sidebar-profile-role-badge-wrapper mt-1">
+                          <span class="sidebar-profile-role-badge">
+                            {{ displayRole }}
+                          </span>
+                        </div>
                       </div>
-                      <div class="sidebar-profile-role-badge-wrapper mt-1">
-                        <span class="sidebar-profile-role-badge">
-                          {{ displayRole }}
-                        </span>
-                      </div>
-                    </div>
-                  </transition>
+                    </transition>
+                  </div>
                 </div>
+              </template>
+              <!-- Tooltip details -->
+              <div class="pa-1 text-center">
+                <div class="font-weight-bold">Thông tin tài khoản</div>
+                <div class="text-caption text-grey-lighten-2">{{ auth.fullName }}</div>
+                <div class="text-caption text-grey-lighten-2">Vai trò: {{ displayRole }}</div>
+                <div class="text-caption text-grey-lighten-3" v-if="auth.user?.email">{{ auth.user.email }}</div>
               </div>
-            </template>
-            <!-- Tooltip details -->
-            <div class="pa-1 text-center">
-              <div class="font-weight-bold">Thông tin tài khoản</div>
-              <div class="text-caption text-grey-lighten-2">{{ auth.fullName }}</div>
-              <div class="text-caption text-grey-lighten-2">Vai trò: {{ displayRole }}</div>
-              <div class="text-caption text-grey-lighten-3" v-if="auth.user?.email">{{ auth.user.email }}</div>
-            </div>
-          </v-tooltip>
+            </v-tooltip>
 
-          <v-btn
-            block
-            color="red"
-            variant="flat"
-            prepend-icon="mdi-logout"
-            @click="logout"
-            class="logout-btn"
-          >
-            Đăng xuất
-          </v-btn>
+            <!-- Small Logout Icon Button -->
+            <v-tooltip text="Đăng xuất" location="top">
+              <template #activator="{ props }">
+                <v-btn
+                  v-bind="props"
+                  icon="mdi-logout"
+                  variant="outlined"
+                  size="40"
+                  class="sidebar-profile-logout-btn"
+                  @click="logout"
+                />
+              </template>
+            </v-tooltip>
+          </div>
         </div>
 
         <!-- Collapsed Sidebar Profile -->
