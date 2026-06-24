@@ -633,7 +633,14 @@ body.dark-theme #app {
 
 body.dark-theme .top-app-bar {
   background: rgba(15, 23, 42, 0.86) !important;
-  border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+  border-bottom: 1px solid rgba(139, 92, 246, 0.25) !important;
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.08) !important;
+}
+
+body.dark-theme .professional-drawer {
+  background: linear-gradient(180deg, #090d16 0%, #0f172a 100%) !important;
+  border-right: 1px solid rgba(139, 92, 246, 0.25) !important;
+  box-shadow: 4px 0 25px rgba(139, 92, 246, 0.08) !important;
 }
 
 body.dark-theme .page-title {
@@ -734,4 +741,48 @@ body.dark-theme .role-pill {
 .slide-page-leave-to {
   opacity: 0;
   transform: translateX(30px);
+}
+
+/* Dark Mode Neon Icons contrast adjustments */
+body.dark-theme .cyan-glowing-icon {
+  color: #00e5ff !important;
+  background: rgba(6, 182, 212, 0.1) !important;
+  border-color: rgba(6, 182, 212, 0.35) !important;
+  box-shadow: 0 0 18px rgba(6, 182, 212, 0.25);
+}
+body.dark-theme .purple-glowing-icon {
+  color: #c084fc !important;
+  background: rgba(168, 85, 247, 0.1) !important;
+  border-color: rgba(168, 85, 247, 0.35) !important;
+  box-shadow: 0 0 18px rgba(168, 85, 247, 0.25);
+}
+body.dark-theme .teal-glowing-icon {
+  color: #00f5d4 !important;
+  background: rgba(13, 148, 136, 0.1) !important;
+  border-color: rgba(13, 148, 136, 0.35) !important;
+  box-shadow: 0 0 18px rgba(13, 148, 136, 0.25);
+}
+body.dark-theme .amber-glowing-icon {
+  color: #fbbf24 !important;
+  background: rgba(217, 119, 6, 0.1) !important;
+  border-color: rgba(217, 119, 6, 0.35) !important;
+  box-shadow: 0 0 18px rgba(217, 119, 6, 0.25);
+}
+body.dark-theme .error-glowing-icon {
+  color: #ff6b6b !important;
+  background: rgba(239, 68, 68, 0.1) !important;
+  border-color: rgba(239, 68, 68, 0.35) !important;
+  box-shadow: 0 0 18px rgba(239, 68, 68, 0.25);
+}
+body.dark-theme .info-glowing-icon {
+  color: #60a5fa !important;
+  background: rgba(59, 130, 246, 0.1) !important;
+  border-color: rgba(59, 130, 246, 0.35) !important;
+  box-shadow: 0 0 18px rgba(59, 130, 246, 0.25);
+}
+body.dark-theme .success-glowing-icon {
+  color: #34d399 !important;
+  background: rgba(16, 185, 129, 0.1) !important;
+  border-color: rgba(16, 185, 129, 0.35) !important;
+  box-shadow: 0 0 18px rgba(16, 185, 129, 0.25);
 }
