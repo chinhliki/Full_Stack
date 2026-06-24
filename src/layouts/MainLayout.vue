@@ -189,7 +189,7 @@
         class="mr-3 theme-toggle-btn"
         @click="toggleTheme"
       >
-        <v-icon :icon="isDark ? 'mdi-sunny' : 'mdi-weather-night'" />
+        <v-icon :icon="isDark ? 'mdi-weather-sunny' : 'mdi-weather-night'" />
       </v-btn>
 
       <div class="d-none d-md-flex align-center mr-4">

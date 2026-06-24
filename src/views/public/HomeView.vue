@@ -26,7 +26,7 @@
             class="mr-2 theme-toggle-btn"
             @click="toggleTheme"
           >
-            <v-icon :icon="isDark ? 'mdi-sunny' : 'mdi-weather-night'" />
+            <v-icon :icon="isDark ? 'mdi-weather-sunny' : 'mdi-weather-night'" />
           </v-btn>
 
           <template v-if="auth.isLoggedIn">
