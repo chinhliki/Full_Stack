@@ -1297,4 +1297,84 @@ body.dark-theme tr:hover .table-index-badge {
     opacity: 1;
   }
 }
+
+/* ==========================================================================
+   SIDEBAR PROFILE SECTION STYLING (ALWAYS DARK/NEON DESIGN)
+   ========================================================================== */
+.sidebar-profile-card {
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.08) 0%, rgba(168, 85, 247, 0.08) 100%) !important;
+  border: 1px solid rgba(168, 85, 247, 0.15) !important;
+  border-radius: 16px !important;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.sidebar-profile-card:hover {
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.15) 0%, rgba(168, 85, 247, 0.15) 100%) !important;
+  border-color: rgba(168, 85, 247, 0.4) !important;
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.25), 0 0 8px rgba(6, 182, 212, 0.12) !important;
+}
+
+.sidebar-profile-avatar {
+  border: 2px solid rgba(6, 182, 212, 0.35) !important;
+  box-shadow: 0 0 8px rgba(6, 182, 212, 0.22) !important;
+  transition: all 0.3s ease !important;
+}
+
+.sidebar-profile-card:hover .sidebar-profile-avatar {
+  border-color: rgba(6, 182, 212, 0.7) !important;
+  box-shadow: 0 0 12px rgba(6, 182, 212, 0.45) !important;
+}
+
+.sidebar-profile-name {
+  font-size: 14.5px;
+  letter-spacing: -0.01em;
+}
+
+.sidebar-profile-role-badge-wrapper {
+  display: flex;
+}
+
+.sidebar-profile-role-badge {
+  font-size: 10px;
+  font-weight: 750;
+  color: #c084fc !important;
+  background: rgba(168, 85, 247, 0.12) !important;
+  padding: 3px 8px;
+  border-radius: 99px;
+  border: 1px solid rgba(168, 85, 247, 0.3) !important;
+  box-shadow: 0 0 6px rgba(168, 85, 247, 0.15);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.sidebar-profile-avatar-collapsed {
+  cursor: pointer;
+  transition: all 0.3s ease !important;
+}
+
+.sidebar-profile-avatar-collapsed:hover {
+  transform: scale(1.08);
+}
+
+.sidebar-profile-avatar-collapsed:hover .sidebar-profile-avatar {
+  border-color: rgba(6, 182, 212, 0.7) !important;
+  box-shadow: 0 0 15px rgba(6, 182, 212, 0.5) !important;
+}
+
+/* Fade-role transition when switching user roles */
+.fade-role-enter-active,
+.fade-role-leave-active {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.fade-role-enter-from {
+  opacity: 0;
+  transform: translateY(5px);
+}
+
+.fade-role-leave-to {
+  opacity: 0;
+  transform: translateY(-5px);
+}
 

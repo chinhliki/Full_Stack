@@ -124,29 +124,75 @@
       </v-list>
 
       <template #append>
+        <!-- Expanded Sidebar Profile -->
         <div class="pa-4" v-if="!rail">
-          <v-card class="pa-4" color="rgba(255,255,255,0.08)" rounded="xl">
-            <div class="text-caption text-white opacity-70">
-              Đăng nhập với vai trò
+          <v-tooltip location="top" offset="10">
+            <template #activator="{ props }">
+              <div
+                v-bind="props"
+                class="sidebar-profile-card d-flex align-center pa-3 mb-4"
+              >
+                <!-- Avatar -->
+                <v-avatar size="44" color="rgba(168, 85, 247, 0.25)" class="sidebar-profile-avatar mr-3">
+                  <v-img v-if="auth.user?.avatarUrl" :src="auth.user.avatarUrl" />
+                  <v-icon v-else icon="mdi-account" color="white" />
+                </v-avatar>
+                <!-- Name & Role -->
+                <div class="sidebar-profile-details overflow-hidden">
+                  <transition name="fade-role" mode="out-in">
+                    <div :key="auth.role">
+                      <div class="sidebar-profile-name font-weight-bold text-white text-truncate">
+                        {{ auth.fullName || 'Người dùng' }}
+                      </div>
+                      <div class="sidebar-profile-role-badge-wrapper mt-1">
+                        <span class="sidebar-profile-role-badge">
+                          {{ displayRole }}
+                        </span>
+                      </div>
+                    </div>
+                  </transition>
+                </div>
+              </div>
+            </template>
+            <!-- Tooltip details -->
+            <div class="pa-1 text-center">
+              <div class="font-weight-bold">Thông tin tài khoản</div>
+              <div class="text-caption text-grey-lighten-2">{{ auth.fullName }}</div>
+              <div class="text-caption text-grey-lighten-2">Vai trò: {{ displayRole }}</div>
+              <div class="text-caption text-grey-lighten-3" v-if="auth.user?.email">{{ auth.user.email }}</div>
             </div>
+          </v-tooltip>
 
-            <div class="text-white font-weight-bold mt-1">
-              {{ displayRole }}
-            </div>
-
-            <v-btn
-              block
-              class="mt-4"
-              color="red"
-              variant="flat"
-              prepend-icon="mdi-logout"
-              @click="logout"
-            >
-              Đăng xuất
-            </v-btn>
-          </v-card>
+          <v-btn
+            block
+            color="red"
+            variant="flat"
+            prepend-icon="mdi-logout"
+            @click="logout"
+            class="logout-btn"
+          >
+            Đăng xuất
+          </v-btn>
         </div>
-        <div class="pa-2 text-center" v-else>
+
+        <!-- Collapsed Sidebar Profile -->
+        <div class="pa-2 text-center d-flex flex-column align-center" v-else>
+          <v-tooltip location="right" offset="15">
+            <template #activator="{ props }">
+              <div v-bind="props" class="sidebar-profile-avatar-collapsed mb-3">
+                <v-avatar size="40" color="rgba(168, 85, 247, 0.25)" class="sidebar-profile-avatar cursor-pointer">
+                  <v-img v-if="auth.user?.avatarUrl" :src="auth.user.avatarUrl" />
+                  <v-icon v-else icon="mdi-account" color="white" />
+                </v-avatar>
+              </div>
+            </template>
+            <div class="pa-1">
+              <div class="font-weight-bold">{{ auth.fullName || 'Người dùng' }}</div>
+              <div class="text-caption text-grey-lighten-2">{{ displayRole }}</div>
+              <div class="text-caption text-grey-lighten-3" v-if="auth.user?.email">{{ auth.user.email }}</div>
+            </div>
+          </v-tooltip>
+
           <v-tooltip text="Đăng xuất" location="right">
             <template #activator="{ props }">
               <v-btn
@@ -156,6 +202,7 @@
                 variant="tonal"
                 size="small"
                 @click="logout"
+                class="logout-btn-collapsed"
               />
             </template>
           </v-tooltip>
@@ -170,12 +217,14 @@
     >
       <v-app-bar-nav-icon @click="rail = !rail" />
 
-      <div>
+      <v-spacer />
+
+      <div class="text-center">
         <v-app-bar-title class="font-weight-bold">
           Hệ thống quản lý thư viện số
         </v-app-bar-title>
 
-        <div class="text-caption text-grey-darken-1 ml-4">
+        <div class="text-caption text-grey-darken-1">
           ASP.NET Core · VueJS · SQL Server · API Gateway
         </div>
       </div>
@@ -191,22 +240,6 @@
       >
         <v-icon :icon="isDark ? 'mdi-weather-sunny' : 'mdi-weather-night'" />
       </v-btn>
-
-      <div class="d-none d-md-flex align-center mr-4">
-        <div class="text-right mr-3">
-          <div class="font-weight-bold text-secondary">
-            {{ auth.fullName || 'Người dùng' }}
-          </div>
-
-          <div class="text-caption text-grey-darken-1">
-            {{ auth.email }}
-          </div>
-        </div>
-
-        <div class="role-pill">
-          {{ displayRole }}
-        </div>
-      </div>
     </v-app-bar>
 
     <v-main>
