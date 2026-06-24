@@ -797,39 +797,62 @@ body.dark-theme .content-shell {
 /* Theme Toggle Button Style with Dynamic Neon Glowing */
 .theme-toggle-btn {
   position: relative;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
-/* Light Mode Sun/Moon icon: dark color and yellow glow on hover */
+.theme-toggle-btn .v-icon {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease, color 0.3s ease !important;
+}
+
+/* Light Mode: moon icon in dark blue with golden glow on hover */
 body:not(.dark-theme) .theme-toggle-btn {
-  color: #334155 !important;
+  color: #1e3a8a !important; /* Xanh đậm */
+  border: 1px solid rgba(30, 58, 138, 0.15) !important;
+  background: rgba(30, 58, 138, 0.04) !important;
 }
 
 body:not(.dark-theme) .theme-toggle-btn:hover {
-  color: #d97706 !important;
-  filter: drop-shadow(0 0 6px rgba(217, 119, 6, 0.75)) !important;
+  color: #d97706 !important; /* Vàng đậm */
+  border-color: rgba(217, 119, 6, 0.45) !important;
   background: rgba(217, 119, 6, 0.08) !important;
+  box-shadow: 0 0 14px rgba(217, 119, 6, 0.3) !important;
 }
 
-/* Dark Mode Sun/Moon icon: white color and pulsing neon glow */
+body:not(.dark-theme) .theme-toggle-btn:hover .v-icon {
+  transform: rotate(15deg) scale(1.1);
+  filter: drop-shadow(0 0 6px rgba(217, 119, 6, 0.65)) !important;
+}
+
+/* Dark Mode: sun icon in bright white with purple neon glow border and gentle pulsing */
 body.dark-theme .theme-toggle-btn {
   color: #ffffff !important;
-  animation: neon-glow-pulse 2.2s infinite ease-in-out;
+  border: 1px solid rgba(168, 85, 247, 0.45) !important;
+  background: rgba(168, 85, 247, 0.08) !important;
+  animation: neon-glow-pulse 2s infinite ease-in-out;
 }
 
 body.dark-theme .theme-toggle-btn:hover {
-  background: rgba(255, 255, 255, 0.08) !important;
+  animation-play-state: paused;
+  background: rgba(168, 85, 247, 0.16) !important;
+  border-color: rgba(6, 182, 212, 0.65) !important;
+  box-shadow: 0 0 18px rgba(6, 182, 212, 0.5), inset 0 0 10px rgba(6, 182, 212, 0.25) !important;
+}
+
+body.dark-theme .theme-toggle-btn:hover .v-icon {
+  transform: rotate(15deg) scale(1.1);
+  filter: drop-shadow(0 0 8px rgba(6, 182, 212, 0.8)) !important;
 }
 
 @keyframes neon-glow-pulse {
   0%, 100% {
-    filter: drop-shadow(0 0 2px rgba(168, 85, 247, 0.5)) drop-shadow(0 0 6px rgba(6, 182, 212, 0.3));
+    box-shadow: 0 0 6px rgba(168, 85, 247, 0.22), inset 0 0 4px rgba(168, 85, 247, 0.08) !important;
+    filter: drop-shadow(0 0 3px rgba(168, 85, 247, 0.45)) drop-shadow(0 0 5px rgba(6, 182, 212, 0.25));
     transform: scale(1);
-    opacity: 0.9;
   }
   50% {
-    filter: drop-shadow(0 0 6px rgba(168, 85, 247, 0.95)) drop-shadow(0 0 15px rgba(6, 182, 212, 0.75));
-    transform: scale(1.08);
-    opacity: 1;
+    box-shadow: 0 0 14px rgba(168, 85, 247, 0.45), inset 0 0 8px rgba(168, 85, 247, 0.16) !important;
+    filter: drop-shadow(0 0 7px rgba(168, 85, 247, 0.85)) drop-shadow(0 0 12px rgba(6, 182, 212, 0.65));
+    transform: scale(1.06);
   }
 }
 
