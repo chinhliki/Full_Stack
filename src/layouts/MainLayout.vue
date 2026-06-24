@@ -182,6 +182,16 @@
 
       <v-spacer />
 
+      <v-btn
+        icon
+        variant="text"
+        color="secondary"
+        class="mr-3 theme-toggle-btn"
+        @click="toggleTheme"
+      >
+        <v-icon :icon="isDark ? 'mdi-sunny' : 'mdi-weather-night'" />
+      </v-btn>
+
       <div class="d-none d-md-flex align-center mr-4">
         <div class="text-right mr-3">
           <div class="font-weight-bold text-secondary">
@@ -212,14 +222,41 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/authStore'
+import { useTheme } from 'vuetify'
 
 const drawer = ref(true)
 const rail = ref(false)
 const router = useRouter()
 const auth = useAuthStore()
+const theme = useTheme()
+
+const isDark = ref(false)
+
+function initTheme() {
+  const saved = localStorage.getItem('theme')
+  if (saved) {
+    isDark.value = saved === 'dark'
+  } else {
+    isDark.value = false
+  }
+  applyTheme()
+}
+
+function toggleTheme() {
+  isDark.value = !isDark.value
+  localStorage.setItem('theme', isDark.value ? 'dark' : 'light')
+  applyTheme()
+}
+
+function applyTheme() {
+  document.body.classList.toggle('dark-theme', isDark.value)
+  theme.global.name.value = isDark.value ? 'libraryDarkTheme' : 'libraryTheme'
+}
+
+onMounted(initTheme)
 
 const isAdminOrLibrarian = computed(() =>
   ['Admin', 'Librarian'].includes(auth.role)

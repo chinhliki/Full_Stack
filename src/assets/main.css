@@ -615,3 +615,123 @@ a:hover .v-icon,
   opacity: 0;
   transform: scale(0.85);
 }
+
+/* Smooth dark/light transition */
+body, #app, .v-card, .v-table, .v-table td, .v-table th, .v-btn, .v-navigation-drawer, .top-app-bar, .info-box-premium {
+  transition: background 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+/* Dark Mode Overrides */
+body.dark-theme {
+  background: #090d16 !important;
+  color: #f8fafc !important;
+}
+
+body.dark-theme #app {
+  background: #090d16 !important;
+}
+
+body.dark-theme .top-app-bar {
+  background: rgba(15, 23, 42, 0.86) !important;
+  border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-theme .page-title {
+  color: #ffffff !important;
+}
+
+body.dark-theme .page-subtitle {
+  color: #94a3b8 !important;
+}
+
+body.dark-theme .soft-card {
+  background: rgba(15, 23, 42, 0.85) !important;
+  border-color: rgba(139, 92, 246, 0.25) !important;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.2) !important;
+}
+
+body.dark-theme .stat-card {
+  background: rgba(15, 23, 42, 0.85) !important;
+  border-color: rgba(139, 92, 246, 0.25) !important;
+  box-shadow: 0 18px 40px rgba(139, 92, 246, 0.08) !important;
+}
+
+body.dark-theme .stat-card:hover {
+  border-color: rgba(6, 182, 212, 0.5) !important;
+  box-shadow: 0 20px 40px rgba(139, 92, 246, 0.2) !important;
+}
+
+body.dark-theme .stat-card::after {
+  background: rgba(139, 92, 246, 0.06);
+}
+
+body.dark-theme .stat-value {
+  color: #ffffff !important;
+}
+
+body.dark-theme .stat-label {
+  color: #94a3b8 !important;
+}
+
+body.dark-theme .table-card {
+  background: rgba(15, 23, 42, 0.85) !important;
+  border-color: rgba(139, 92, 246, 0.25) !important;
+}
+
+body.dark-theme .table-card:hover {
+  border-color: rgba(6, 182, 212, 0.5) !important;
+  box-shadow: 0 20px 45px rgba(6, 182, 212, 0.15) !important;
+}
+
+body.dark-theme .v-table th {
+  background: #0b0f19 !important;
+  color: #94a3b8 !important;
+}
+
+body.dark-theme .v-table td {
+  color: #f1f5f9 !important;
+  border-bottom-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+body.dark-theme .v-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.02) !important;
+}
+
+body.dark-theme .info-box-premium {
+  background: rgba(15, 23, 42, 0.7) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-theme .info-box-premium:hover {
+  background: rgba(15, 23, 42, 0.85) !important;
+  border-color: rgba(139, 92, 246, 0.25) !important;
+}
+
+body.dark-theme .info-label-premium {
+  color: #94a3b8 !important;
+}
+
+body.dark-theme .info-value-premium {
+  color: #ffffff !important;
+}
+
+body.dark-theme .role-pill {
+  background: rgba(139, 92, 246, 0.15) !important;
+  color: #a855f7 !important;
+}
+
+/* Global Slide-page transition (smooth slide left-to-right) */
+.slide-page-enter-active,
+.slide-page-leave-active {
+  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.slide-page-enter-from {
+  opacity: 0;
+  transform: translateX(-30px);
+}
+
+.slide-page-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+}
