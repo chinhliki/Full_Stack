@@ -460,27 +460,17 @@ const route = useRoute()
 const auth = useAuthStore()
 const theme = useTheme()
 
-const isDark = ref(false)
-
-function initTheme() {
-  const saved = localStorage.getItem('theme')
-  if (saved) {
-    isDark.value = saved === 'dark'
-  } else {
-    isDark.value = false
+const isDark = computed({
+  get: () => theme.global.name.value === 'libraryDarkTheme',
+  set: (val) => {
+    theme.global.name.value = val ? 'libraryDarkTheme' : 'libraryTheme'
+    document.body.classList.toggle('dark-theme', val)
+    localStorage.setItem('theme', val ? 'dark' : 'light')
   }
-  applyTheme()
-}
+})
 
 function toggleTheme() {
   isDark.value = !isDark.value
-  localStorage.setItem('theme', isDark.value ? 'dark' : 'light')
-  applyTheme()
-}
-
-function applyTheme() {
-  document.body.classList.toggle('dark-theme', isDark.value)
-  theme.global.name.value = isDark.value ? 'libraryDarkTheme' : 'libraryTheme'
 }
 
 const isScrolled = ref(false)
@@ -643,7 +633,6 @@ function handleScroll() {
 let observer = null
 
 onMounted(() => {
-  initTheme()
   window.addEventListener('scroll', handleScroll)
   handleScroll()
 

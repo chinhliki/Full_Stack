@@ -616,9 +616,13 @@ a:hover .v-icon,
   transform: scale(0.85);
 }
 
-/* Smooth dark/light transition */
-body, #app, .v-card, .v-table, .v-table td, .v-table th, .v-btn, .v-navigation-drawer, .top-app-bar, .info-box-premium {
-  transition: background 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease !important;
+/* Smooth dark/light transition - 0.3s fade-in of styling changes */
+body, #app, .v-card, .v-table, .v-table td, .v-table th, .v-btn, .v-navigation-drawer, .top-app-bar, .info-box-premium,
+.home-page, .home-header, .brand, .brand-text, .nav-link, .user-name, .user-role, .feature-card, .feature-icon,
+.book-cover, .stats-section, .stat-icon-wrapper, .service-card, .service-icon-box, .home-footer, .footer-col h3,
+.contact-item, .footer-link, .login-page, .login-form-section, .register-page, .register-form-section,
+.custom-input, .input-label, .v-list-item, .role-pill, .content-shell {
+  transition: background 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease, filter 0.3s ease, opacity 0.3s ease !important;
 }
 
 /* Dark Mode Overrides */
@@ -631,16 +635,19 @@ body.dark-theme #app {
   background: #090d16 !important;
 }
 
+/* Header neon spreading aura (cyberpunk purple-cyan ambient aura) */
 body.dark-theme .top-app-bar {
-  background: rgba(15, 23, 42, 0.86) !important;
-  border-bottom: 1px solid rgba(139, 92, 246, 0.25) !important;
-  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.08) !important;
+  background: rgba(9, 13, 22, 0.82) !important;
+  border-bottom: 1px solid rgba(6, 182, 212, 0.25) !important;
+  box-shadow: 0 10px 40px -10px rgba(168, 85, 247, 0.12), 0 2px 20px rgba(6, 182, 212, 0.08) !important;
+  backdrop-filter: blur(18px) !important;
 }
 
+/* Sidebar neon aura */
 body.dark-theme .professional-drawer {
   background: linear-gradient(180deg, #090d16 0%, #0f172a 100%) !important;
-  border-right: 1px solid rgba(139, 92, 246, 0.25) !important;
-  box-shadow: 4px 0 25px rgba(139, 92, 246, 0.08) !important;
+  border-right: 1px solid rgba(168, 85, 247, 0.25) !important;
+  box-shadow: 4px 0 30px rgba(168, 85, 247, 0.08) !important;
 }
 
 body.dark-theme .page-title {
@@ -651,25 +658,26 @@ body.dark-theme .page-subtitle {
   color: #94a3b8 !important;
 }
 
-body.dark-theme .soft-card {
-  background: rgba(15, 23, 42, 0.85) !important;
-  border-color: rgba(139, 92, 246, 0.25) !important;
-  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.2) !important;
+/* Glowing borders and soft neon shadows for cards, stats, and tables */
+body.dark-theme .v-card,
+body.dark-theme .soft-card,
+body.dark-theme .stat-card,
+body.dark-theme .table-card {
+  background: rgba(15, 23, 42, 0.82) !important;
+  border: 1px solid rgba(168, 85, 247, 0.22) !important;
+  box-shadow: 0 0 15px rgba(168, 85, 247, 0.06), 0 10px 30px rgba(0, 0, 0, 0.3) !important;
 }
 
-body.dark-theme .stat-card {
-  background: rgba(15, 23, 42, 0.85) !important;
-  border-color: rgba(139, 92, 246, 0.25) !important;
-  box-shadow: 0 18px 40px rgba(139, 92, 246, 0.08) !important;
-}
-
-body.dark-theme .stat-card:hover {
+body.dark-theme .v-card:hover,
+body.dark-theme .soft-card:hover,
+body.dark-theme .stat-card:hover,
+body.dark-theme .table-card:hover {
   border-color: rgba(6, 182, 212, 0.5) !important;
-  box-shadow: 0 20px 40px rgba(139, 92, 246, 0.2) !important;
+  box-shadow: 0 0 22px rgba(6, 182, 212, 0.2), 0 15px 45px rgba(0, 0, 0, 0.4) !important;
 }
 
 body.dark-theme .stat-card::after {
-  background: rgba(139, 92, 246, 0.06);
+  background: rgba(168, 85, 247, 0.06);
 }
 
 body.dark-theme .stat-value {
@@ -678,16 +686,6 @@ body.dark-theme .stat-value {
 
 body.dark-theme .stat-label {
   color: #94a3b8 !important;
-}
-
-body.dark-theme .table-card {
-  background: rgba(15, 23, 42, 0.85) !important;
-  border-color: rgba(139, 92, 246, 0.25) !important;
-}
-
-body.dark-theme .table-card:hover {
-  border-color: rgba(6, 182, 212, 0.5) !important;
-  box-shadow: 0 20px 45px rgba(6, 182, 212, 0.15) !important;
 }
 
 body.dark-theme .v-table th {
@@ -711,7 +709,7 @@ body.dark-theme .info-box-premium {
 
 body.dark-theme .info-box-premium:hover {
   background: rgba(15, 23, 42, 0.85) !important;
-  border-color: rgba(139, 92, 246, 0.25) !important;
+  border-color: rgba(168, 85, 247, 0.25) !important;
 }
 
 body.dark-theme .info-label-premium {
@@ -723,8 +721,8 @@ body.dark-theme .info-value-premium {
 }
 
 body.dark-theme .role-pill {
-  background: rgba(139, 92, 246, 0.15) !important;
-  color: #a855f7 !important;
+  background: rgba(168, 85, 247, 0.15) !important;
+  color: #c084fc !important;
 }
 
 /* Global Slide-page transition (smooth slide left-to-right) */
@@ -743,7 +741,7 @@ body.dark-theme .role-pill {
   transform: translateX(30px);
 }
 
-/* Dark Mode Neon Icons contrast adjustments */
+/* Dark Mode Neon Icons contrast adjustments - automatically adjust brightness for dark background */
 body.dark-theme .cyan-glowing-icon {
   color: #00e5ff !important;
   background: rgba(6, 182, 212, 0.1) !important;
@@ -786,3 +784,360 @@ body.dark-theme .success-glowing-icon {
   border-color: rgba(16, 185, 129, 0.35) !important;
   box-shadow: 0 0 18px rgba(16, 185, 129, 0.25);
 }
+
+/* Make sure Dark Mode is deep neon blue-purple without any white areas */
+body.dark-theme,
+body.dark-theme #app,
+body.dark-theme .v-main,
+body.dark-theme .content-shell {
+  background: #090d16 !important;
+  color: #f8fafc !important;
+}
+
+/* Theme Toggle Button Style with Dynamic Neon Glowing */
+.theme-toggle-btn {
+  position: relative;
+}
+
+/* Light Mode Sun/Moon icon: dark color and yellow glow on hover */
+body:not(.dark-theme) .theme-toggle-btn {
+  color: #334155 !important;
+}
+
+body:not(.dark-theme) .theme-toggle-btn:hover {
+  color: #d97706 !important;
+  filter: drop-shadow(0 0 6px rgba(217, 119, 6, 0.75)) !important;
+  background: rgba(217, 119, 6, 0.08) !important;
+}
+
+/* Dark Mode Sun/Moon icon: white color and pulsing neon glow */
+body.dark-theme .theme-toggle-btn {
+  color: #ffffff !important;
+  animation: neon-glow-pulse 2.2s infinite ease-in-out;
+}
+
+body.dark-theme .theme-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+@keyframes neon-glow-pulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 2px rgba(168, 85, 247, 0.5)) drop-shadow(0 0 6px rgba(6, 182, 212, 0.3));
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    filter: drop-shadow(0 0 6px rgba(168, 85, 247, 0.95)) drop-shadow(0 0 15px rgba(6, 182, 212, 0.75));
+    transform: scale(1.08);
+    opacity: 1;
+  }
+}
+
+/* Global Overrides to eliminate white areas inside dialogs and lists in Dark Mode */
+body.dark-theme .info-box {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-theme .info-label {
+  color: #94a3b8 !important;
+}
+
+body.dark-theme .info-value {
+  color: #ffffff !important;
+}
+
+body.dark-theme .book-cover {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-theme .cover-fallback,
+body.dark-theme .cover-placeholder,
+body.dark-theme .preview-fallback,
+body.dark-theme .preview-cover,
+body.dark-theme .detail-cover {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: #94a3b8 !important;
+}
+
+body.dark-theme .bg-gradient-title {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%) !important;
+  border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Ensure all buttons in dark mode have soft neon hover glow */
+body.dark-theme .v-btn:hover {
+  box-shadow: 0 0 14px rgba(168, 85, 247, 0.4) !important;
+  border-color: rgba(168, 85, 247, 0.5) !important;
+}
+
+/* ==========================================================================
+   LANDING PAGE (HOMEVIEW) DARK MODE OVERRIDES
+   ========================================================================== */
+body.dark-theme .home-page {
+  background: #090d16 !important;
+  color: #f8fafc !important;
+}
+
+body.dark-theme .home-header {
+  background: rgba(9, 13, 22, 0.75) !important;
+  border-bottom: 1px solid rgba(168, 85, 247, 0.2) !important;
+}
+
+body.dark-theme .home-header-scrolled {
+  background: rgba(9, 13, 22, 0.92) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
+  border-bottom-color: rgba(168, 85, 247, 0.3) !important;
+}
+
+body.dark-theme .brand {
+  color: #ffffff !important;
+}
+
+body.dark-theme .brand-text {
+  background: none !important;
+  -webkit-text-fill-color: #ffffff !important;
+  color: #ffffff !important;
+}
+
+body.dark-theme .nav-link {
+  color: #94a3b8 !important;
+}
+
+body.dark-theme .nav-link:hover,
+body.dark-theme .nav-link.active {
+  color: #3b82f6 !important;
+}
+
+body.dark-theme .nav-link::after {
+  background-color: #3b82f6 !important;
+}
+
+body.dark-theme .user-name {
+  color: #ffffff !important;
+}
+
+body.dark-theme .user-role {
+  color: #3b82f6 !important;
+}
+
+body.dark-theme .section-heading h2,
+body.dark-theme .section-title-row h2 {
+  color: #ffffff !important;
+}
+
+body.dark-theme .section-heading p,
+body.dark-theme .section-title-row p {
+  color: #94a3b8 !important;
+}
+
+body.dark-theme .feature-card {
+  background: rgba(15, 23, 42, 0.8) !important;
+  border: 1px solid rgba(168, 85, 247, 0.22) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35) !important;
+}
+
+body.dark-theme .feature-card:hover {
+  border-color: rgba(6, 182, 212, 0.45) !important;
+  box-shadow: 0 20px 45px rgba(168, 85, 247, 0.12) !important;
+}
+
+body.dark-theme .feature-icon {
+  background: rgba(37, 99, 235, 0.12) !important;
+  color: #3b82f6 !important;
+}
+
+body.dark-theme .feature-card:hover .feature-icon {
+  background: #3b82f6 !important;
+  color: #ffffff !important;
+}
+
+body.dark-theme .feature-card h3 {
+  color: #ffffff !important;
+}
+
+body.dark-theme .feature-card p {
+  color: #94a3b8 !important;
+}
+
+body.dark-theme .book-badge {
+  background: rgba(15, 23, 42, 0.95) !important;
+  border-color: rgba(168, 85, 247, 0.25) !important;
+  color: #3b82f6 !important;
+}
+
+body.dark-theme .book-meta h4 {
+  color: #ffffff !important;
+}
+
+body.dark-theme .book-card:hover .book-meta h4 {
+  color: #3b82f6 !important;
+}
+
+body.dark-theme .book-meta p {
+  color: #94a3b8 !important;
+}
+
+body.dark-theme .stats-section {
+  background: #0b0f19 !important;
+  border-top-color: rgba(168, 85, 247, 0.2) !important;
+  border-bottom-color: rgba(168, 85, 247, 0.2) !important;
+}
+
+body.dark-theme .stat-icon-wrapper {
+  background: rgba(15, 23, 42, 0.85) !important;
+  border-color: rgba(168, 85, 247, 0.22) !important;
+  box-shadow: none !important;
+}
+
+body.dark-theme .stat-number {
+  color: #ffffff !important;
+}
+
+body.dark-theme .stat-label {
+  color: #94a3b8 !important;
+}
+
+body.dark-theme .service-card {
+  background: rgba(15, 23, 42, 0.8) !important;
+  border: 1px solid rgba(168, 85, 247, 0.22) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35) !important;
+}
+
+body.dark-theme .service-card:hover {
+  border-color: rgba(6, 182, 212, 0.45) !important;
+  box-shadow: 0 20px 45px rgba(168, 85, 247, 0.12) !important;
+}
+
+body.dark-theme .service-icon-box {
+  background: rgba(15, 23, 42, 0.85) !important;
+  color: #3b82f6 !important;
+  border-color: rgba(168, 85, 247, 0.22) !important;
+}
+
+body.dark-theme .service-card:hover .service-icon-box {
+  background: #3b82f6 !important;
+  color: #ffffff !important;
+  border-color: #3b82f6 !important;
+}
+
+body.dark-theme .service-card h3 {
+  color: #ffffff !important;
+}
+
+body.dark-theme .service-card p {
+  color: #94a3b8 !important;
+}
+
+body.dark-theme .tech-dots span {
+  background: rgba(255, 255, 255, 0.15) !important;
+}
+
+body.dark-theme .service-card:hover .tech-dots span {
+  background: #3b82f6 !important;
+}
+
+body.dark-theme .home-footer {
+  background: linear-gradient(135deg, #090d16 0%, #0b0f19 100%) !important;
+  border-top-color: rgba(168, 85, 247, 0.2) !important;
+  color: #94a3b8 !important;
+}
+
+body.dark-theme .footer-col h3 {
+  color: #ffffff !important;
+}
+
+body.dark-theme .contact-item {
+  color: #94a3b8 !important;
+}
+
+body.dark-theme .footer-link {
+  color: #94a3b8 !important;
+}
+
+body.dark-theme .footer-link:hover {
+  color: #3b82f6 !important;
+}
+
+body.dark-theme .bottom-bar {
+  border-top-color: rgba(255, 255, 255, 0.06) !important;
+  color: #64748b !important;
+}
+
+body.dark-theme .mobile-menu {
+  background: #090d16 !important;
+  border-left-color: rgba(168, 85, 247, 0.25) !important;
+}
+
+body.dark-theme .mobile-nav-link {
+  color: #94a3b8 !important;
+}
+
+body.dark-theme .mobile-nav-link.active {
+  color: #3b82f6 !important;
+}
+
+/* ==========================================================================
+   LOGIN & REGISTER PAGES DARK MODE OVERRIDES
+   ========================================================================== */
+body.dark-theme .login-page,
+body.dark-theme .register-page {
+  background: #090d16 !important;
+  color: #f8fafc !important;
+}
+
+body.dark-theme .login-form-section,
+body.dark-theme .register-form-section {
+  background: #090d16 !important;
+  box-shadow: 12px 0 50px rgba(0, 0, 0, 0.4) !important;
+}
+
+body.dark-theme .login-brand-icon,
+body.dark-theme .register-brand-icon {
+  background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%) !important;
+}
+
+body.dark-theme .brand-text {
+  color: #ffffff !important;
+}
+
+body.dark-theme .brand-tagline {
+  color: #94a3b8 !important;
+}
+
+body.dark-theme .greeting-title {
+  color: #ffffff !important;
+}
+
+body.dark-theme .greeting-subtitle {
+  color: #94a3b8 !important;
+}
+
+body.dark-theme .input-label {
+  color: #94a3b8 !important;
+}
+
+body.dark-theme .remember-forgot,
+body.dark-theme .terms-check {
+  color: #94a3b8 !important;
+}
+
+body.dark-theme .forgot-link,
+body.dark-theme .terms-link {
+  color: #3b82f6 !important;
+}
+
+body.dark-theme .form-footer-text {
+  color: #94a3b8 !important;
+}
+
+body.dark-theme .register-link {
+  color: #3b82f6 !important;
+}
+
+body.dark-theme .bg-floating-icon {
+  color: rgba(168, 85, 247, 0.15) !important;
+}
+
