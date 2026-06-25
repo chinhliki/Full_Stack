@@ -32,62 +32,54 @@
     </v-alert>
 
     <v-row class="mb-5">
-      <v-col cols="12" md="3">
-        <v-card class="stat-card pa-5">
-          <div class="d-flex align-center justify-space-between">
-            <div>
-              <div class="stat-label">Tổng độc giả</div>
-              <div class="stat-value">{{ readers.length }}</div>
-            </div>
-
-            <v-avatar color="primary" variant="tonal" size="54">
-              <v-icon icon="mdi-account-group" size="28" />
-            </v-avatar>
+      <v-col cols="12" sm="6" md="3">
+        <v-card class="stat-card pa-5 d-flex align-center" rounded="xl">
+          <div class="stat-info">
+            <div class="stat-label text-uppercase mb-1">Tổng độc giả</div>
+            <div class="stat-value text-primary font-weight-black">{{ readers.length }}</div>
+          </div>
+          <v-spacer />
+          <div class="stat-icon-wrapper-glow info-glowing-icon">
+            <v-icon icon="mdi-account-group" size="30" />
           </div>
         </v-card>
       </v-col>
 
-      <v-col cols="12" md="3">
-        <v-card class="stat-card pa-5">
-          <div class="d-flex align-center justify-space-between">
-            <div>
-              <div class="stat-label">Tài khoản hoạt động</div>
-              <div class="stat-value">{{ activeUserCount }}</div>
-            </div>
-
-            <v-avatar color="success" variant="tonal" size="54">
-              <v-icon icon="mdi-account-check" size="28" />
-            </v-avatar>
+      <v-col cols="12" sm="6" md="3">
+        <v-card class="stat-card pa-5 d-flex align-center" rounded="xl">
+          <div class="stat-info">
+            <div class="stat-label text-uppercase mb-1">Tài khoản hoạt động</div>
+            <div class="stat-value text-success font-weight-black">{{ activeUserCount }}</div>
+          </div>
+          <v-spacer />
+          <div class="stat-icon-wrapper-glow success-glowing-icon">
+            <v-icon icon="mdi-account-check" size="30" />
           </div>
         </v-card>
       </v-col>
 
-      <v-col cols="12" md="3">
-        <v-card class="stat-card pa-5">
-          <div class="d-flex align-center justify-space-between">
-            <div>
-              <div class="stat-label">Tài khoản bị khóa</div>
-              <div class="stat-value">{{ lockedUserCount }}</div>
-            </div>
-
-            <v-avatar color="error" variant="tonal" size="54">
-              <v-icon icon="mdi-account-lock" size="28" />
-            </v-avatar>
+      <v-col cols="12" sm="6" md="3">
+        <v-card class="stat-card pa-5 d-flex align-center" rounded="xl">
+          <div class="stat-info">
+            <div class="stat-label text-uppercase mb-1">Tài khoản bị khóa</div>
+            <div class="stat-value text-error font-weight-black">{{ lockedUserCount }}</div>
+          </div>
+          <v-spacer />
+          <div class="stat-icon-wrapper-glow error-glowing-icon">
+            <v-icon icon="mdi-account-lock" size="30" />
           </div>
         </v-card>
       </v-col>
 
-      <v-col cols="12" md="3">
-        <v-card class="stat-card pa-5">
-          <div class="d-flex align-center justify-space-between">
-            <div>
-              <div class="stat-label">Thẻ hết hạn</div>
-              <div class="stat-value">{{ expiredCardCount }}</div>
-            </div>
-
-            <v-avatar color="warning" variant="tonal" size="54">
-              <v-icon icon="mdi-card-account-details-star" size="28" />
-            </v-avatar>
+      <v-col cols="12" sm="6" md="3">
+        <v-card class="stat-card pa-5 d-flex align-center" rounded="xl">
+          <div class="stat-info">
+            <div class="stat-label text-uppercase mb-1">Thẻ hết hạn</div>
+            <div class="stat-value text-amber-darken-3 font-weight-black">{{ expiredCardCount }}</div>
+          </div>
+          <v-spacer />
+          <div class="stat-icon-wrapper-glow amber-glowing-icon">
+            <v-icon icon="mdi-card-account-details-star" size="30" />
           </div>
         </v-card>
       </v-col>
@@ -182,7 +174,7 @@
               <th>Độc giả</th>
               <th>Email</th>
               <th>SĐT</th>
-              <th>Địa chỉ</th>
+              <th>Vai trò</th>
               <th>Trạng thái TK</th>
               <th>Số thẻ</th>
               <th>Hạn thẻ</th>
@@ -221,10 +213,16 @@
 
               <td>{{ reader.email }}</td>
               <td>{{ reader.phone || '-' }}</td>
+
               <td>
-                <div class="address-cell">
-                  {{ reader.address || '-' }}
-                </div>
+                <v-chip
+                  :color="getRoleColor(reader.role)"
+                  size="small"
+                  variant="tonal"
+                >
+                  <v-icon start :icon="getRoleIcon(reader.role)" />
+                  {{ getRoleText(reader.role) }}
+                </v-chip>
               </td>
 
               <td>
@@ -363,6 +361,22 @@
                       />
                     </template>
                   </v-tooltip>
+
+                  <!-- Phân quyền vai trò (Admin only) -->
+                  <v-tooltip text="Phân quyền vai trò">
+                    <template #activator="{ props }">
+                      <v-btn
+                        v-if="canManageUser"
+                        v-bind="props"
+                        icon="mdi-shield-account"
+                        size="small"
+                        color="purple"
+                        variant="tonal"
+                        :loading="loadingId === reader.userId + '-role'"
+                        @click="openRoleDialog(reader)"
+                      />
+                    </template>
+                  </v-tooltip>
                 </div>
               </td>
             </tr>
@@ -413,6 +427,70 @@
         </div>
       </div>
     </v-card>
+
+    <!-- Dialog phân quyền vai trò -->
+    <v-dialog v-model="roleDialog" max-width="460">
+      <v-card v-if="selectedForRole">
+        <v-card-title class="d-flex align-center">
+          <v-icon icon="mdi-shield-account" color="purple" class="mr-2" />
+          Phân quyền vai trò
+
+          <v-spacer />
+
+          <v-btn icon="mdi-close" variant="text" @click="roleDialog = false" />
+        </v-card-title>
+
+        <v-divider />
+
+        <v-card-text>
+          <div class="info-box-premium mb-4">
+            <div class="info-label-premium">Tài khoản</div>
+            <div class="info-value-premium">{{ selectedForRole.fullName }}</div>
+          </div>
+
+          <div class="info-box-premium mb-4">
+            <div class="info-label-premium">Vai trò hiện tại</div>
+            <div class="info-value-premium mt-1">
+              <v-chip :color="getRoleColor(selectedForRole.role)" variant="tonal" size="small">
+                <v-icon start :icon="getRoleIcon(selectedForRole.role)" />
+                {{ getRoleText(selectedForRole.role) }}
+              </v-chip>
+            </div>
+          </div>
+
+          <v-select
+            v-model="newRole"
+            label="Chọn vai trò mới"
+            :items="roleOptions"
+            prepend-inner-icon="mdi-shield-account"
+          />
+
+          <v-alert type="warning" variant="tonal" rounded="lg" class="mt-2">
+            Thay đổi vai trò sẽ ảnh hưởng đến quyền truy cập của người dùng trong hệ thống.
+          </v-alert>
+        </v-card-text>
+
+        <v-divider />
+
+        <v-card-actions>
+          <v-spacer />
+
+          <v-btn variant="text" @click="roleDialog = false">
+            Hủy
+          </v-btn>
+
+          <v-btn
+            color="purple"
+            prepend-icon="mdi-check"
+            :loading="loadingId === selectedForRole.userId + '-role'"
+            :disabled="!newRole || newRole === selectedForRole.role"
+            @click="confirmSetRole"
+          >
+            Xác nhận phân quyền
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
     <v-dialog v-model="cardDialog" max-width="780" transition="dialog-scale-transition">
       <v-card v-if="selectedCard">
@@ -576,6 +654,16 @@ const success = ref(true)
 
 const cardDialog = ref(false)
 const selectedCard = ref(null)
+
+const roleDialog = ref(false)
+const selectedForRole = ref(null)
+const newRole = ref('')
+
+const roleOptions = [
+  { title: 'Độc giả (Reader)', value: 'Reader' },
+  { title: 'Thủ thư (Librarian)', value: 'Librarian' },
+  { title: 'Quản trị viên (Admin)', value: 'Admin' }
+]
 
 const userStatusOptions = [
   { title: 'Hoạt động', value: 'Active' },
@@ -824,6 +912,54 @@ async function unlockUser(reader) {
   } finally {
     loadingId.value = ''
   }
+}
+
+function openRoleDialog(reader) {
+  selectedForRole.value = reader
+  newRole.value = reader.role || 'Reader'
+  roleDialog.value = true
+}
+
+async function confirmSetRole() {
+  if (!selectedForRole.value || !newRole.value) return
+
+  loadingId.value = selectedForRole.value.userId + '-role'
+  message.value = ''
+
+  try {
+    const res = await userApi.setRole(selectedForRole.value.userId, newRole.value)
+
+    success.value = true
+    message.value = res.data?.message || `Đã phân quyền "${getRoleText(newRole.value)}" cho ${selectedForRole.value.fullName}`
+
+    roleDialog.value = false
+    await loadReaders()
+  } catch (err) {
+    success.value = false
+    message.value = err.response?.data?.message || 'Phân quyền thất bại'
+    console.error(err.response || err)
+  } finally {
+    loadingId.value = ''
+  }
+}
+
+function getRoleText(role) {
+  if (role === 'Admin') return 'Quản trị viên'
+  if (role === 'Librarian') return 'Thủ thư'
+  if (role === 'Reader') return 'Độc giả'
+  return role || 'Độc giả'
+}
+
+function getRoleColor(role) {
+  if (role === 'Admin') return 'error'
+  if (role === 'Librarian') return 'primary'
+  return 'success'
+}
+
+function getRoleIcon(role) {
+  if (role === 'Admin') return 'mdi-shield-crown'
+  if (role === 'Librarian') return 'mdi-book-account'
+  return 'mdi-account'
 }
 
 function getReaderCode(reader) {

@@ -40,62 +40,54 @@
     </v-alert>
 
     <v-row class="mb-5">
-      <v-col cols="12" md="3">
-        <v-card class="stat-card pa-5">
-          <div class="d-flex align-center justify-space-between">
-            <div>
-              <div class="stat-label">Tổng phiếu</div>
-              <div class="stat-value">{{ borrows.length }}</div>
-            </div>
-
-            <v-avatar color="primary" variant="tonal" size="54">
-              <v-icon icon="mdi-clipboard-text-outline" size="28" />
-            </v-avatar>
+      <v-col cols="12" sm="6" md="3">
+        <v-card class="stat-card pa-5 d-flex align-center" rounded="xl">
+          <div class="stat-info">
+            <div class="stat-label text-uppercase mb-1">Tổng phiếu</div>
+            <div class="stat-value text-primary font-weight-black">{{ borrows.length }}</div>
+          </div>
+          <v-spacer />
+          <div class="stat-icon-wrapper-glow info-glowing-icon">
+            <v-icon icon="mdi-clipboard-text-outline" size="30" />
           </div>
         </v-card>
       </v-col>
 
-      <v-col cols="12" md="3">
-        <v-card class="stat-card pa-5">
-          <div class="d-flex align-center justify-space-between">
-            <div>
-              <div class="stat-label">Đang mượn</div>
-              <div class="stat-value">{{ borrowingCount }}</div>
-            </div>
-
-            <v-avatar color="warning" variant="tonal" size="54">
-              <v-icon icon="mdi-book-clock-outline" size="28" />
-            </v-avatar>
+      <v-col cols="12" sm="6" md="3">
+        <v-card class="stat-card pa-5 d-flex align-center" rounded="xl">
+          <div class="stat-info">
+            <div class="stat-label text-uppercase mb-1">Đang mượn</div>
+            <div class="stat-value text-purple font-weight-black">{{ borrowingCount }}</div>
+          </div>
+          <v-spacer />
+          <div class="stat-icon-wrapper-glow purple-glowing-icon">
+            <v-icon icon="mdi-book-clock-outline" size="30" />
           </div>
         </v-card>
       </v-col>
 
-      <v-col cols="12" md="3">
-        <v-card class="stat-card pa-5">
-          <div class="d-flex align-center justify-space-between">
-            <div>
-              <div class="stat-label">Đã trả</div>
-              <div class="stat-value">{{ returnedCount }}</div>
-            </div>
-
-            <v-avatar color="success" variant="tonal" size="54">
-              <v-icon icon="mdi-check-circle-outline" size="28" />
-            </v-avatar>
+      <v-col cols="12" sm="6" md="3">
+        <v-card class="stat-card pa-5 d-flex align-center" rounded="xl">
+          <div class="stat-info">
+            <div class="stat-label text-uppercase mb-1">Đã trả</div>
+            <div class="stat-value text-teal font-weight-black">{{ returnedCount }}</div>
+          </div>
+          <v-spacer />
+          <div class="stat-icon-wrapper-glow teal-glowing-icon">
+            <v-icon icon="mdi-check-circle-outline" size="30" />
           </div>
         </v-card>
       </v-col>
 
-      <v-col cols="12" md="3">
-        <v-card class="stat-card pa-5">
-          <div class="d-flex align-center justify-space-between">
-            <div>
-              <div class="stat-label">Chưa thanh toán phạt</div>
-              <div class="stat-value">{{ unpaidFineCount }}</div>
-            </div>
-
-            <v-avatar color="error" variant="tonal" size="54">
-              <v-icon icon="mdi-cash-clock" size="28" />
-            </v-avatar>
+      <v-col cols="12" sm="6" md="3">
+        <v-card class="stat-card pa-5 d-flex align-center" rounded="xl">
+          <div class="stat-info">
+            <div class="stat-label text-uppercase mb-1">Chưa thanh toán phạt</div>
+            <div class="stat-value text-amber-darken-3 font-weight-black">{{ unpaidFineCount }}</div>
+          </div>
+          <v-spacer />
+          <div class="stat-icon-wrapper-glow amber-glowing-icon">
+            <v-icon icon="mdi-cash-clock" size="30" />
           </div>
         </v-card>
       </v-col>
@@ -287,14 +279,15 @@
                     </template>
                   </v-tooltip>
 
-                  <v-tooltip text="Trả sách">
+                  <!-- ✓ Xác nhận trả sách -->
+                  <v-tooltip text="✓ Xác nhận trả sách">
                     <template #activator="{ props }">
                       <v-btn
                         v-if="borrow.status === 'Borrowed'"
                         v-bind="props"
-                        icon="mdi-book-arrow-left"
+                        icon="mdi-check-circle"
                         size="small"
-                        color="primary"
+                        color="success"
                         variant="tonal"
                         :loading="loadingId === borrow.id + '-return'"
                         @click="openReturnDialog(borrow)"
@@ -302,14 +295,30 @@
                     </template>
                   </v-tooltip>
 
-                  <v-tooltip text="Thanh toán phí phạt">
+                  <!-- ✗ Từ chối / Đánh dấu vấn đề -->
+                  <v-tooltip text="✗ Báo sự cố trả sách">
+                    <template #activator="{ props }">
+                      <v-btn
+                        v-if="borrow.status === 'Borrowed'"
+                        v-bind="props"
+                        icon="mdi-close-circle"
+                        size="small"
+                        color="error"
+                        variant="tonal"
+                        @click="rejectReturn(borrow)"
+                      />
+                    </template>
+                  </v-tooltip>
+
+                  <!-- Thu phí phạt -->
+                  <v-tooltip text="Thu phí phạt">
                     <template #activator="{ props }">
                       <v-btn
                         v-if="Number(borrow.fineAmount || 0) > 0 && !borrow.isFinePaid"
                         v-bind="props"
                         icon="mdi-credit-card-check"
                         size="small"
-                        color="success"
+                        color="warning"
                         variant="tonal"
                         :loading="loadingId === borrow.id + '-pay'"
                         @click="openPayDialog(borrow)"
@@ -422,13 +431,36 @@
             </v-col>
           </v-row>
 
+          <!-- Cảnh báo max 5 sách -->
           <v-alert
+            v-if="selectedReaderActiveBorrowCount >= 5"
+            type="error"
+            variant="tonal"
+            rounded="lg"
+            class="mt-3"
+            icon="mdi-alert-circle"
+          >
+            Độc giả này đang mượn <strong>{{ selectedReaderActiveBorrowCount }}/5 quyển</strong> (đã đạt giới hạn). Không thể tạo phiếu mượn thêm.
+          </v-alert>
+
+          <v-alert
+            v-else-if="selectedReaderActiveBorrowCount >= 4 && createForm.readerId"
+            type="warning"
+            variant="tonal"
+            rounded="lg"
+            class="mt-3"
+          >
+            Độc giả đang mượn <strong>{{ selectedReaderActiveBorrowCount }}/5 quyển</strong>. Còn có thể tạo thêm {{ 5 - selectedReaderActiveBorrowCount }} phiếu.
+          </v-alert>
+
+          <v-alert
+            v-else
             type="info"
             variant="tonal"
             rounded="lg"
             class="mt-2"
           >
-            Hệ thống sẽ kiểm tra trạng thái độc giả, thẻ thư viện và số lượng sách còn lại trước khi tạo phiếu.
+            Hệ thống sẽ kiểm tra trạng thái độc giả, thẻ thư viện và số lượng sách còn lại trước khi tạo phiếu. Mỗi độc giả được mượn tối đa <strong>5 quyển</strong>.
           </v-alert>
         </v-card-text>
 
@@ -736,6 +768,13 @@ const borrowingCount = computed(() =>
   borrows.value.filter(x => x.status === 'Borrowed').length
 )
 
+const selectedReaderActiveBorrowCount = computed(() => {
+  if (!createForm.value.readerId) return 0
+  return borrows.value.filter(b =>
+    b.readerId === createForm.value.readerId && b.status === 'Borrowed'
+  ).length
+})
+
 const returnedCount = computed(() =>
   borrows.value.filter(x => x.status === 'Returned').length
 )
@@ -989,6 +1028,10 @@ function validateCreateForm() {
   if (!createForm.value.borrowDate) return 'Vui lòng chọn ngày mượn'
   if (!createForm.value.dueDate) return 'Vui lòng chọn hạn trả'
 
+  if (selectedReaderActiveBorrowCount.value >= 5) {
+    return `Độc giả này đang mượn ${selectedReaderActiveBorrowCount.value}/5 quyển (đã đạt giới hạn tối đa). Không thể tạo phiếu mượn thêm.`
+  }
+
   const borrowDate = new Date(createForm.value.borrowDate)
   const dueDate = new Date(createForm.value.dueDate)
 
@@ -997,6 +1040,11 @@ function validateCreateForm() {
   }
 
   return ''
+}
+
+function rejectReturn(borrow) {
+  success.value = false
+  message.value = `Đã ghi nhận sự cố trả sách "${borrow.bookTitle}". Vui lòng liên hệ độc giả để xử lý.`
 }
 
 function getReaderCode(borrow) {

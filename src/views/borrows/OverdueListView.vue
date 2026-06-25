@@ -32,62 +32,54 @@
     </v-alert>
 
     <v-row class="mb-5">
-      <v-col cols="12" md="3">
-        <v-card class="stat-card pa-5">
-          <div class="d-flex align-center justify-space-between">
-            <div>
-              <div class="stat-label">Tổng phiếu quá hạn</div>
-              <div class="stat-value">{{ overdueBorrows.length }}</div>
-            </div>
-
-            <v-avatar color="error" variant="tonal" size="54">
-              <v-icon icon="mdi-alert-circle" size="28" />
-            </v-avatar>
+      <v-col cols="12" sm="6" md="3">
+        <v-card class="stat-card pa-5 d-flex align-center" rounded="xl">
+          <div class="stat-info">
+            <div class="stat-label text-uppercase mb-1">Tổng phiếu quá hạn</div>
+            <div class="stat-value text-error font-weight-black">{{ overdueBorrows.length }}</div>
+          </div>
+          <v-spacer />
+          <div class="stat-icon-wrapper-glow error-glowing-icon">
+            <v-icon icon="mdi-alert-circle" size="30" />
           </div>
         </v-card>
       </v-col>
 
-      <v-col cols="12" md="3">
-        <v-card class="stat-card pa-5">
-          <div class="d-flex align-center justify-space-between">
-            <div>
-              <div class="stat-label">Quá hạn ≤ 7 ngày</div>
-              <div class="stat-value">{{ shortOverdueCount }}</div>
-            </div>
-
-            <v-avatar color="warning" variant="tonal" size="54">
-              <v-icon icon="mdi-clock-alert-outline" size="28" />
-            </v-avatar>
+      <v-col cols="12" sm="6" md="3">
+        <v-card class="stat-card pa-5 d-flex align-center" rounded="xl">
+          <div class="stat-info">
+            <div class="stat-label text-uppercase mb-1">Quá hạn ≤ 7 ngày</div>
+            <div class="stat-value text-amber-darken-3 font-weight-black">{{ shortOverdueCount }}</div>
+          </div>
+          <v-spacer />
+          <div class="stat-icon-wrapper-glow amber-glowing-icon">
+            <v-icon icon="mdi-clock-alert-outline" size="30" />
           </div>
         </v-card>
       </v-col>
 
-      <v-col cols="12" md="3">
-        <v-card class="stat-card pa-5">
-          <div class="d-flex align-center justify-space-between">
-            <div>
-              <div class="stat-label">Quá hạn > 7 ngày</div>
-              <div class="stat-value">{{ longOverdueCount }}</div>
-            </div>
-
-            <v-avatar color="error" variant="tonal" size="54">
-              <v-icon icon="mdi-calendar-alert" size="28" />
-            </v-avatar>
+      <v-col cols="12" sm="6" md="3">
+        <v-card class="stat-card pa-5 d-flex align-center" rounded="xl">
+          <div class="stat-info">
+            <div class="stat-label text-uppercase mb-1">Quá hạn &gt; 7 ngày</div>
+            <div class="stat-value text-error font-weight-black">{{ longOverdueCount }}</div>
+          </div>
+          <v-spacer />
+          <div class="stat-icon-wrapper-glow error-glowing-icon">
+            <v-icon icon="mdi-calendar-alert" size="30" />
           </div>
         </v-card>
       </v-col>
 
-      <v-col cols="12" md="3">
-        <v-card class="stat-card pa-5">
-          <div class="d-flex align-center justify-space-between">
-            <div>
-              <div class="stat-label">Phạt dự kiến</div>
-              <div class="stat-value money-value">{{ formatMoney(totalEstimatedFine) }}</div>
-            </div>
-
-            <v-avatar color="success" variant="tonal" size="54">
-              <v-icon icon="mdi-cash-clock" size="28" />
-            </v-avatar>
+      <v-col cols="12" sm="6" md="3">
+        <v-card class="stat-card pa-5 d-flex align-center" rounded="xl">
+          <div class="stat-info">
+            <div class="stat-label text-uppercase mb-1">Phạt dự kiến</div>
+            <div class="stat-value text-amber-darken-3 font-weight-black fine-value">{{ formatMoney(totalEstimatedFine) }}</div>
+          </div>
+          <v-spacer />
+          <div class="stat-icon-wrapper-glow amber-glowing-icon">
+            <v-icon icon="mdi-cash-clock" size="30" />
           </div>
         </v-card>
       </v-col>

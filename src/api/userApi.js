@@ -7,5 +7,9 @@ export const userApi = {
 
   unlockUser(id) {
     return api.put(`/api/identity/users/${id}/unlock`)
+  },
+
+  setRole(userId, role) {
+    return api.put(`/api/identity/users/${userId}/role`, { role })
   }
 }

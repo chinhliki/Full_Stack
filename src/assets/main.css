@@ -176,40 +176,40 @@ body {
 }
 
 .sidebar-title {
-  color: #ffffff;
+  color: #1e293b;
   font-weight: 800;
   font-size: 15px;
   line-height: 1.1;
 }
 
 .sidebar-subtitle {
-  color: rgba(255, 255, 255, 0.62);
+  color: rgba(30, 41, 59, 0.55);
   font-size: 12px;
   margin-top: 3px;
 }
 
 .professional-drawer {
-  background: linear-gradient(180deg, #0f172a 0%, #111827 100%) !important;
-  color: white !important;
-  border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+  background: #ffffff !important;
+  color: #1e293b !important;
+  border-right: 1px solid rgba(226, 232, 240, 0.9) !important;
   transition: border-color 0.4s ease, box-shadow 0.4s ease !important;
 }
 
 .professional-drawer:hover {
-  border-right-color: rgba(168, 85, 247, 0.35) !important;
+  border-right-color: rgba(168, 85, 247, 0.25) !important;
   box-shadow: 4px 0 25px rgba(168, 85, 247, 0.04) !important;
 }
 
 .professional-drawer .v-list-item {
   margin: 4px 10px;
   border-radius: 14px !important;
-  color: rgba(255, 255, 255, 0.78) !important;
+  color: rgba(30, 41, 59, 0.72) !important;
   transition: all 0.25s ease !important;
 }
 
 .professional-drawer .v-list-item:hover {
-  background: rgba(168, 85, 247, 0.12) !important;
-  color: #ffffff !important;
+  background: rgba(168, 85, 247, 0.08) !important;
+  color: #1e293b !important;
   transform: translateX(4px);
 }
 
@@ -219,13 +219,22 @@ body {
 }
 
 .professional-drawer .v-list-item--active {
-  background: linear-gradient(135deg, rgba(37, 99, 235, 0.25) 0%, rgba(168, 85, 247, 0.25) 100%) !important;
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%) !important;
   border-left: 3px solid #06B6D4 !important;
-  color: #ffffff !important;
+  color: #2563eb !important;
+}
+
+.professional-drawer .v-list-item--active .v-icon {
+  color: #2563eb !important;
 }
 
 .professional-drawer .v-icon {
-  color: rgba(255, 255, 255, 0.82) !important;
+  color: rgba(30, 41, 59, 0.6) !important;
+}
+
+/* Logo icon always white — it sits on a colored gradient background */
+.sidebar-logo .v-icon {
+  color: #ffffff !important;
 }
 
 .top-app-bar {
@@ -410,8 +419,8 @@ a:hover .v-icon,
   border-right: 1px solid rgba(168, 85, 247, 0.18) !important;
 }
 
-/* Glowing items when collapsed or hovered */
-.professional-drawer .v-list-item:hover {
+/* Glowing items when collapsed or hovered (dark mode only) */
+body.dark-theme .professional-drawer .v-list-item:hover {
   background: linear-gradient(90deg, rgba(37, 99, 235, 0.15) 0%, rgba(168, 85, 247, 0.15) 100%) !important;
   color: #ffffff !important;
   box-shadow: 0 0 12px rgba(168, 85, 247, 0.25);
@@ -635,6 +644,30 @@ body.dark-theme #app {
   background: #090d16 !important;
 }
 
+/* App bar title color for dark mode */
+body.dark-theme .app-bar-title-text {
+  color: #f1f5f9 !important;
+}
+
+.home-icon-btn {
+  color: #64748b !important;
+  opacity: 0.7;
+  transition: opacity 0.2s ease, color 0.2s ease !important;
+}
+
+.home-icon-btn:hover {
+  opacity: 1;
+  color: #2563eb !important;
+}
+
+body.dark-theme .home-icon-btn {
+  color: #94a3b8 !important;
+}
+
+body.dark-theme .home-icon-btn:hover {
+  color: #60a5fa !important;
+}
+
 /* Header neon spreading aura (cyberpunk purple-cyan ambient aura) */
 body.dark-theme .top-app-bar {
   background: rgba(9, 13, 22, 0.82) !important;
@@ -648,6 +681,46 @@ body.dark-theme .professional-drawer {
   background: linear-gradient(180deg, #090d16 0%, #0f172a 100%) !important;
   border-right: 1px solid rgba(168, 85, 247, 0.25) !important;
   box-shadow: 4px 0 30px rgba(168, 85, 247, 0.08) !important;
+  color: white !important;
+}
+
+body.dark-theme .sidebar-title {
+  color: #ffffff !important;
+}
+
+body.dark-theme .sidebar-subtitle {
+  color: rgba(255, 255, 255, 0.62) !important;
+}
+
+body.dark-theme .professional-drawer .v-list-item {
+  color: rgba(255, 255, 255, 0.78) !important;
+}
+
+body.dark-theme .professional-drawer .v-list-item:hover {
+  background: linear-gradient(90deg, rgba(37, 99, 235, 0.15) 0%, rgba(168, 85, 247, 0.15) 100%) !important;
+  color: #ffffff !important;
+}
+
+body.dark-theme .professional-drawer .v-list-item--active {
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.25) 0%, rgba(168, 85, 247, 0.25) 100%) !important;
+  color: #ffffff !important;
+}
+
+body.dark-theme .professional-drawer .v-list-item--active .v-icon {
+  color: #ffffff !important;
+}
+
+body.dark-theme .professional-drawer .v-icon {
+  color: rgba(255, 255, 255, 0.82) !important;
+}
+
+body.dark-theme .sidebar-profile-name {
+  color: #ffffff !important;
+}
+
+body.dark-theme .sidebar-profile-logout-btn,
+body.dark-theme .logout-btn-collapsed.v-btn {
+  color: #ffffff !important;
 }
 
 body.dark-theme .page-title {
@@ -1329,6 +1402,7 @@ body.dark-theme tr:hover .table-index-badge {
 .sidebar-profile-name {
   font-size: 14.5px;
   letter-spacing: -0.01em;
+  color: #1e293b;
 }
 
 .sidebar-profile-role-badge-wrapper {
@@ -1381,8 +1455,8 @@ body.dark-theme tr:hover .table-index-badge {
 /* Sidebar Logout Icon styling */
 .sidebar-profile-logout-btn,
 .logout-btn-collapsed.v-btn {
-  color: #ffffff !important;
-  background: rgba(255, 255, 255, 0.05) !important;
+  color: #64748b !important;
+  background: rgba(100, 116, 139, 0.06) !important;
   border: 1px solid rgba(168, 85, 247, 0.35) !important;
   box-shadow: 0 0 6px rgba(168, 85, 247, 0.15) !important;
   border-radius: 12px !important;
@@ -1391,8 +1465,8 @@ body.dark-theme tr:hover .table-index-badge {
 
 .sidebar-profile-logout-btn:hover,
 .logout-btn-collapsed.v-btn:hover {
-  background: rgba(245, 158, 11, 0.1) !important;
-  color: #f59e0b !important; /* orange icon on hover */
+  background: rgba(239, 68, 68, 0.1) !important;
+  color: #ef4444 !important;
   border-color: rgba(245, 158, 11, 0.45) !important; /* orange border on hover */
   filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.8)) !important; /* soft orange glow */
   box-shadow: 0 0 15px rgba(245, 158, 11, 0.3) !important;

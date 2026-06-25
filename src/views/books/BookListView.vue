@@ -51,6 +51,28 @@
       {{ message }}
     </v-alert>
 
+    <v-alert
+      v-if="isReader && myActiveBorrowCount >= 5"
+      type="error"
+      variant="tonal"
+      class="mb-4"
+      rounded="lg"
+      icon="mdi-alert-circle"
+    >
+      Bạn đang mượn <b>5/5</b> quyển sách (đã đạt giới hạn tối đa). Vui lòng trả sách trước khi mượn thêm.
+    </v-alert>
+
+    <v-alert
+      v-else-if="isReader && myActiveBorrowCount >= 4"
+      type="warning"
+      variant="tonal"
+      class="mb-4"
+      rounded="lg"
+      icon="mdi-alert"
+    >
+      Bạn đang mượn <b>{{ myActiveBorrowCount }}/5</b> quyển. Bạn chỉ còn có thể mượn thêm <b>{{ 5 - myActiveBorrowCount }}</b> quyển nữa.
+    </v-alert>
+
     <v-row class="mb-5">
       <v-col cols="12" sm="6" md="3">
         <v-card class="stat-card pa-5 d-flex align-center" rounded="xl">
@@ -211,6 +233,7 @@
             <th>Còn</th>
             <th>Trạng thái</th>
             <th v-if="canManageBook" class="text-center">Hành động</th>
+            <th v-if="isReader" class="text-center">Thao tác</th>
           </tr>
         </thead>
 
@@ -334,10 +357,28 @@
                 </v-tooltip>
               </div>
             </td>
+
+            <td v-if="isReader" class="text-center">
+              <v-tooltip :text="myActiveBorrowCount >= 5 ? 'Đã đạt giới hạn 5 quyển' : !isBookAvailable(book) ? 'Sách đã hết' : 'Đăng ký mượn sách này'">
+                <template #activator="{ props }">
+                  <v-btn
+                    v-bind="props"
+                    size="small"
+                    color="primary"
+                    variant="tonal"
+                    prepend-icon="mdi-book-plus"
+                    :disabled="!isBookAvailable(book) || myActiveBorrowCount >= 5"
+                    @click="openBorrowDialog(book)"
+                  >
+                    Mượn sách
+                  </v-btn>
+                </template>
+              </v-tooltip>
+            </td>
           </tr>
 
           <tr v-if="paginatedBooks.length === 0">
-            <td :colspan="canManageBook ? 12 : 11" class="text-center pa-8">
+            <td :colspan="canManageBook ? 12 : isReader ? 12 : 11" class="text-center pa-8">
               <v-icon icon="mdi-database-search-outline" size="46" color="grey" />
               <div class="text-subtitle-1 font-weight-bold mt-2">
                 Không tìm thấy sách phù hợp
@@ -381,6 +422,93 @@
         </div>
       </div>
     </v-card>
+
+    <v-dialog v-model="borrowDialog" max-width="520">
+      <v-card v-if="borrowingBook">
+        <v-card-title class="d-flex align-center">
+          <v-icon icon="mdi-book-plus" color="primary" class="mr-2" />
+          Đăng ký mượn sách
+
+          <v-spacer />
+
+          <v-btn
+            icon="mdi-close"
+            variant="text"
+            @click="borrowDialog = false"
+          />
+        </v-card-title>
+
+        <v-divider />
+
+        <v-card-text class="pt-5">
+          <div class="d-flex align-center ga-4 mb-5">
+            <div class="book-cover">
+              <v-img
+                v-if="hasCover(borrowingBook)"
+                :src="borrowingBook.coverImageUrl"
+                width="58"
+                height="78"
+                cover
+                rounded="lg"
+              />
+              <div v-else class="cover-fallback">
+                <v-icon icon="mdi-book-open-page-variant" size="28" />
+              </div>
+            </div>
+
+            <div>
+              <div class="text-subtitle-1 font-weight-black">{{ borrowingBook.title }}</div>
+              <div class="text-body-2 text-grey-darken-1">{{ borrowingBook.author }}</div>
+              <v-chip size="x-small" color="success" variant="tonal" class="mt-1">
+                Còn {{ borrowingBook.availableCopies }} bản
+              </v-chip>
+            </div>
+          </div>
+
+          <v-alert
+            v-if="myActiveBorrowCount >= 4"
+            :type="myActiveBorrowCount >= 5 ? 'error' : 'warning'"
+            variant="tonal"
+            class="mb-4"
+            rounded="lg"
+            density="compact"
+          >
+            Bạn đang mượn <b>{{ myActiveBorrowCount }}/5</b> quyển.
+            <span v-if="myActiveBorrowCount < 5">Còn có thể mượn thêm <b>{{ 5 - myActiveBorrowCount }}</b> quyển.</span>
+            <span v-else>Đã đạt giới hạn tối đa.</span>
+          </v-alert>
+
+          <v-text-field
+            v-model="borrowForm.dueDate"
+            label="Hạn trả sách"
+            type="datetime-local"
+            prepend-inner-icon="mdi-calendar-clock"
+            hint="Mặc định 14 ngày từ hôm nay"
+            persistent-hint
+          />
+        </v-card-text>
+
+        <v-divider />
+
+        <v-card-actions>
+          <v-spacer />
+
+          <v-btn variant="text" @click="borrowDialog = false">
+            Hủy
+          </v-btn>
+
+          <v-btn
+            color="primary"
+            prepend-icon="mdi-check"
+            :loading="borrowing"
+            :disabled="myActiveBorrowCount >= 5"
+            @click="confirmBorrowBook"
+          >
+            Xác nhận mượn
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
     <v-dialog v-model="dialog" max-width="980">
       <v-card>
@@ -656,6 +784,7 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
 import { bookApi } from '../../api/bookApi'
+import { borrowApi } from '../../api/borrowApi'
 import { useAuthStore } from '../../stores/authStore'
 
 const auth = useAuthStore()
@@ -704,6 +833,97 @@ const statusOptions = [
 const canManageBook = computed(() =>
   ['Admin', 'Librarian'].includes(auth.role)
 )
+
+const isReader = computed(() => auth.role === 'Reader')
+
+const borrowDialog = ref(false)
+const borrowingBook = ref(null)
+const borrowForm = ref({ dueDate: '' })
+const borrowing = ref(false)
+const myActiveBorrowCount = ref(0)
+
+function toDateTimeLocal(date) {
+  const pad = (n) => String(n).padStart(2, '0')
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`
+}
+
+function addDays(date, days) {
+  const result = new Date(date)
+  result.setDate(result.getDate() + days)
+  return result
+}
+
+async function loadMyActiveBorrowCount() {
+  if (!isReader.value) return
+  try {
+    const res = await borrowApi.getMyBorrows()
+    myActiveBorrowCount.value = res.data.filter(b => b.status === 'Borrowed').length
+  } catch {
+    myActiveBorrowCount.value = 0
+  }
+}
+
+function openBorrowDialog(book) {
+  borrowingBook.value = book
+  borrowForm.value.dueDate = toDateTimeLocal(addDays(new Date(), 14))
+  borrowDialog.value = true
+}
+
+async function confirmBorrowBook() {
+  if (!borrowingBook.value) return
+
+  if (myActiveBorrowCount.value >= 5) {
+    success.value = false
+    message.value = 'Bạn đang mượn tối đa 5 quyển. Vui lòng trả bớt sách trước khi mượn thêm.'
+    borrowDialog.value = false
+    return
+  }
+
+  // Thử nhiều field name có thể có từ backend
+  const readerId = auth.user?.id
+    || auth.user?.userId
+    || auth.user?.readerId
+    || auth.user?.sub
+
+  if (!readerId) {
+    success.value = false
+    message.value = 'Không xác định được ID người dùng. Vui lòng đăng xuất và đăng nhập lại.'
+    console.error('[Borrow] auth.user object:', JSON.stringify(auth.user))
+    borrowDialog.value = false
+    return
+  }
+
+  borrowing.value = true
+  message.value = ''
+
+  const payload = {
+    readerId,
+    bookId: borrowingBook.value.id,
+    borrowDate: new Date().toISOString(),
+    dueDate: new Date(borrowForm.value.dueDate).toISOString()
+  }
+  console.log('[Borrow] payload:', payload)
+
+  try {
+    await borrowApi.create(payload)
+
+    success.value = true
+    message.value = `Đăng ký mượn sách "${borrowingBook.value.title}" thành công! Đến quầy thủ thư để nhận sách.`
+    myActiveBorrowCount.value += 1
+
+    borrowDialog.value = false
+    await loadBooks()
+  } catch (err) {
+    success.value = false
+    const status = err.response?.status
+    const errData = err.response?.data
+    const errMsg = errData?.message || errData?.detail || errData?.title || errData?.error
+    message.value = errMsg || `Đăng ký mượn sách thất bại${status ? ` (HTTP ${status})` : ''}`
+    console.error('[Borrow] error:', { status, data: errData, payload })
+  } finally {
+    borrowing.value = false
+  }
+}
 
 const availableBookCount = computed(() =>
   books.value.filter(book => isBookAvailable(book)).length
@@ -1019,7 +1239,10 @@ function shortId(value) {
   return String(value).slice(0, 8)
 }
 
-onMounted(loadBooks)
+onMounted(async () => {
+  await loadBooks()
+  await loadMyActiveBorrowCount()
+})
 </script>
 
 <style scoped>

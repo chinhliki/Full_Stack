@@ -10,7 +10,7 @@ export const borrowApi = {
   },
 
   create(data) {
-    return api.post('/api/circulation/borrows', data)
+    return api.post('/api/circulation/borrows', data, { timeout: 60000 })
   },
 
   returnBook(id, data) {

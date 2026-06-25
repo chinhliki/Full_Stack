@@ -9,7 +9,7 @@
       class="professional-drawer"
       :class="{ 'drawer-expanded': !rail }"
     >
-      <div class="sidebar-brand">
+      <div class="sidebar-brand" style="cursor: pointer;" @click="router.push('/')">
         <div class="sidebar-logo">
           <v-icon icon="mdi-library" size="25" />
         </div>
@@ -20,20 +20,9 @@
         </div>
       </div>
 
-      <v-divider class="mx-4 mb-3" color="white" opacity="0.12" />
+      <v-divider class="mx-4 mb-3" opacity="0.18" />
 
       <v-list nav density="comfortable">
-        <v-tooltip :disabled="!rail" location="right" text="Trang chủ">
-          <template #activator="{ props }">
-            <v-list-item
-              v-bind="props"
-              title="Trang chủ"
-              prepend-icon="mdi-home"
-              to="/"
-            />
-          </template>
-        </v-tooltip>
-
         <v-tooltip :disabled="!rail" location="right" text="Dashboard" v-if="isAdminOrLibrarian">
           <template #activator="{ props }">
             <v-list-item
@@ -142,7 +131,7 @@
                   <div class="sidebar-profile-details overflow-hidden">
                     <transition name="fade-role" mode="out-in">
                       <div :key="auth.role">
-                        <div class="sidebar-profile-name font-weight-bold text-white text-truncate">
+                        <div class="sidebar-profile-name font-weight-bold text-truncate">
                           {{ auth.fullName || 'Người dùng' }}
                         </div>
                         <div class="sidebar-profile-role-badge-wrapper mt-1">
@@ -222,16 +211,28 @@
     >
       <v-app-bar-nav-icon @click="rail = !rail" />
 
-      <v-spacer />
-
-      <div class="text-center">
-        <v-app-bar-title class="font-weight-bold">
-          Hệ thống quản lý thư viện số
-        </v-app-bar-title>
-
-        <div class="text-caption text-grey-darken-1">
-          ASP.NET Core · VueJS · SQL Server · API Gateway
+      <div class="ml-2 d-flex align-center ga-2">
+        <div>
+          <div class="font-weight-bold text-subtitle-1 app-bar-title-text">
+            Hệ thống quản lý thư viện số
+          </div>
+          <div class="text-caption text-grey-darken-1">
+            ASP.NET Core · VueJS · SQL Server · API Gateway
+          </div>
         </div>
+
+        <v-tooltip text="Trang chủ" location="bottom">
+          <template #activator="{ props }">
+            <v-btn
+              v-bind="props"
+              icon="mdi-home"
+              size="small"
+              variant="text"
+              class="home-icon-btn"
+              @click="router.push('/')"
+            />
+          </template>
+        </v-tooltip>
       </div>
 
       <v-spacer />
