@@ -6,18 +6,30 @@ Chào mừng bạn đến với giao diện frontend của dự án **Thư việ
 
 ## ✨ Các Tính Năng Nổi Bật Trên Giao Diện
 
-### 1. Trang Chủ Sinh Động & Công Nghệ
-- **Tiêu đề hấp dẫn & Icon công nghệ neon:** Khu vực Hero hiển thị tiêu đề *"Khám Phá Kho Tàng Tri Thức Số Mới"* kèm 8 biểu tượng công nghệ số phát sáng nhẹ (Sách mở, bóng đèn ý tưởng, chip AI, đám mây, kết nối dữ liệu, bộ não,...) với hiệu ứng trôi nổi (`floating`) và xoay chậm vô cực.
-- **Thanh tìm kiếm thông minh:** Hiệu ứng co giãn linh hoạt khi tương tác (`focus-within`) giúp độc giả tra cứu tài liệu nhanh chóng.
-- **Thống kê dạng Marquee vô tận:** Hiển thị các chỉ số ấn tượng của thư viện (`10.000+ Đầu sách`, `50.000+ Độc giả`, `2.5M+ Lượt đọc`) tự động cuộn mượt mà từ trái qua phải không giật lag.
-- **Footer hiện đại:** Tone màu nền sáng gradient xanh-tím đồng bộ hoàn chỉnh, cấu trúc 3 cột rõ ràng cùng Logo thương hiệu có hiệu ứng hover phóng to nhẹ `1.05x`.
+### 1. Dashboard Thống Kê & Quản Trị Tương Tác (MỚI)
+- **Bố cục chân trang chia đôi linh hoạt:** Bố cục chân trang Dashboard được tái cấu trúc thành 2 cột (`cols="12" md="6"`):
+  - **Cột trái:** Top Sách Phổ Biến Nhất.
+  - **Cột phải:** **Độc Giả Phát Sinh Phí Phạt** - Danh sách này tổng hợp tự động và hiển thị theo thời gian thực từ 2 nguồn dữ liệu:
+    1. *Sách quá hạn chưa trả:* Tính toán phí phạt dự kiến (`5,000 đ / ngày`) dựa trên số ngày trễ hẹn của độc giả.
+    2. *Sách đã trả chưa thu phạt:* Các khoản phạt chính thức đã chốt nhưng chưa thanh toán.
+- **Thao tác nhanh trực tiếp:** Quản trị viên chỉ cần nhấn vào tên độc giả bị phạt trên Dashboard, hệ thống sẽ tự động chuyển hướng đến trang [Sách quá hạn](/app/overdue) hoặc [Công nợ phí phạt](/app/fines) tương ứng để thực hiện thu phạt.
+- **Thẻ thống kê thông minh (Interactive Cards):** Toàn bộ các thẻ stats trên Dashboard đều có hiệu ứng hover đổi màu/glow và click để chuyển nhanh đến danh sách chi tiết (Tổng độc giả -> Quản lý độc giả, Tổng tiền phạt -> Công nợ phí phạt,...).
 
-### 2. Trang Đăng Nhập & Đăng Ký Cao Cấp
-- **Tỉ lệ phân chia 60/40 tối ưu:** Cột biểu mẫu chiếm 60% chiều ngang rộng rãi dễ điền thông tin, cột đồ họa chiếm 40% hiển thị hình ảnh minh họa holographic.
-- **Hoạt ảnh Holographic 3D Book:** Cuốn sách kỹ thuật số phát sáng và các hạt dữ liệu tri thức liên tục chuyển động bay lên trên pedestal công nghệ.
-- **Glassmorphism Quote Card:** Thẻ trích dẫn danh ngôn mờ kính tinh tế nằm ở góc dưới cột đồ họa.
-- **Trang trí Icon nổi hai bên:** Phía trái biểu mẫu trang trí các icon học tập mờ tinh tế; phía phải trang trí các icon neon đậm nét hơn.
-- **Xác thực linh hoạt:** Hỗ trợ đăng nhập/đăng ký bằng Email và liên kết nhanh thông qua Google (mẫu).
+### 2. Quản Lý Phiếu Mượn Cho Độc Giả (MỚI)
+- **Gom nhóm phiếu mượn ảo (Virtual Slips Grouping):** Do dữ liệu backend lưu trữ dạng danh mục cuốn sách riêng lẻ, frontend tự động nhóm các cuốn sách mượn cùng ngày (`borrowDate`) thành các **Phiếu mượn** đồng nhất.
+- **Giao diện Card 12px hiện đại:** Hiển thị danh sách phiếu mượn dưới dạng các card lưới có thiết kế bo góc tròn `12px` tinh tế, viền đỏ nhạt nhẹ nhàng (`rgba(239, 68, 68, 0.22)`) và hiệu ứng đổ bóng phát sáng (glowing shadow) khi rê chuột.
+- **Bộ lọc kép chuyên sâu:** Độc giả có thể lọc phiếu mượn dễ dàng theo:
+  - *Trạng thái:* Đang mượn, Đã trả, Quá hạn.
+  - *Thời gian:* Tháng này, 3 tháng gần nhất, Tất cả.
+- **Modal chi tiết Scale-In:** Bấm vào phiếu mượn sẽ mở modal danh sách sách đã mượn kèm hạn trả, phí phạt và nút báo trả trực tiếp. Modal sử dụng hiệu ứng phóng to mượt mà (`dialogScaleIn`) trong vòng `0.2s`.
+
+### 3. Đồng Bộ Hóa Hệ Thống Màu & Dark Mode (Cải Tiến)
+- **Khởi tạo và Lifecycle ổn định:** Đồng bộ hóa biến trạng thái `isDark` trực tiếp từ Vuetify theme vào `localStorage` và thẻ `body` ngay khi ứng dụng mount, triệt tiêu hoàn toàn hiện tượng nhấp nháy sáng (layout flashing).
+- **Thiết kế Cyberpunk & Neon Aura:**
+  - Viền phát sáng tím–xanh neon quanh các hộp thông tin chính, tiêu đề app bar, bảng biểu và thanh điều hướng bên.
+  - Loại bỏ hoàn toàn lớp overlay xám ở góc trên các stats card để giữ nguyên nền sáng sạch sẽ và viền màu neon sắc nét.
+  - Nút chuyển theme (Sun/Moon) được tối ưu hiệu ứng xoay và tạo vùng sáng phát quang huyền ảo (neon glowing pulse) đẹp mắt.
+  - Bổ sung icon ví tiền/đồng xu có dấu trừ `mdi-cash-minus` màu cam phát sáng nhẹ trên thẻ "Tổng phí phạt".
 
 ---
 
@@ -36,7 +48,7 @@ Chào mừng bạn đến với giao diện frontend của dự án **Thư việ
 
 ### Yêu Cầu Hệ Thống
 - [Node.js](https://nodejs.org/) (Khuyến nghị phiên bản LTS v18 trở lên).
-- Trình quản lý gói `npm` hoặc `yarn`.
+- Trình quản lý gói `npm`.
 
 ### Các Bước Cài Đặt
 
@@ -54,7 +66,7 @@ Chào mừng bạn đến với giao diện frontend của dự án **Thư việ
 3. **Cấu hình biến môi trường:**
    Tạo hoặc chỉnh sửa tệp `.env` ở thư mục gốc:
    ```env
-   VITE_API_BASE_URL=http://localhost:5000
+   VITE_API_BASE_URL=http://26.114.35.12:5000
    ```
 
 4. **Khởi chạy máy chủ phát triển (Development Server):**
@@ -75,10 +87,23 @@ Chào mừng bạn đến với giao diện frontend của dự án **Thư việ
 
 ```text
 src/
+├── api/
+│   ├── borrowApi.js        # Các API liên quan tới mượn trả, phí phạt
+│   └── reportApi.js        # API thống kê báo cáo dashboard
+├── layouts/
+│   └── MainLayout.vue      # Bố cục sidebar điều hướng & profile người dùng
 ├── views/
 │   ├── auth/
 │   │   ├── LoginView.vue       # Trang Đăng nhập cao cấp
 │   │   └── RegisterView.vue    # Trang Đăng ký độc giả
+│   ├── dashboard/
+│   │   └── DashboardView.vue   # Dashboard thống kê kèm cột Độc giả bị phạt & Clickable Cards
+│   ├── borrows/
+│   │   ├── BorrowListView.vue  # Quản lý toàn bộ danh sách phiếu mượn (Admin)
+│   │   ├── OverdueListView.vue # Theo dõi sách quá hạn (Admin)
+│   │   └── FineListView.vue    # Quản lý công nợ thu phí phạt (Admin)
+│   ├── reader/
+│   │   └── MyBorrowHistoryView.vue # Trang phiếu mượn cá nhân dạng card của độc giả
 │   └── public/
 │       └── HomeView.vue        # Trang chủ thư viện số
 ```

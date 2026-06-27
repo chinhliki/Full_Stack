@@ -111,6 +111,25 @@
           </v-row>
         </v-card>
 
+        <!-- QR Code card -->
+        <v-card v-if="card?.cardNumber" class="soft-card pa-5 mt-5 text-center">
+          <div class="d-flex align-center justify-center mb-3">
+            <v-icon icon="mdi-qrcode" size="20" class="mr-2 text-secondary" />
+            <span class="text-subtitle-2 font-weight-bold text-secondary">Mã QR thẻ thư viện</span>
+          </div>
+          <div class="d-flex justify-center mb-3">
+            <div class="qr-frame pa-3">
+              <qrcode-vue
+                :value="card.cardNumber"
+                :size="160"
+                level="M"
+                render-as="svg"
+              />
+            </div>
+          </div>
+          <div class="text-caption text-grey">Xuất trình mã QR khi mượn / trả sách tại quầy thủ thư</div>
+        </v-card>
+
         <v-card class="soft-card pa-5 mt-5">
           <div class="d-flex align-center justify-space-between">
             <div>
@@ -278,6 +297,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { libraryCardApi } from '../../api/libraryCardApi'
+import QrcodeVue from 'qrcode.vue'
 
 const router = useRouter()
 
@@ -377,5 +397,11 @@ onMounted(loadMyCard)
 </script>
 
 <style scoped>
-/* No overridden styles needed as premium card and glassmorphism styles are global in main.css */
+.qr-frame {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+  display: inline-block;
+}
 </style>

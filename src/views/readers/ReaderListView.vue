@@ -4,7 +4,7 @@
       <div>
         <div class="page-title">Quản lý độc giả</div>
         <div class="page-subtitle">
-          Quản lý hồ sơ độc giả, tài khoản, thẻ thư viện và trạng thái sử dụng
+          Quản lý tài khoản người dùng, vai trò độc giả và gia hạn thẻ thư viện
         </div>
       </div>
 
@@ -15,9 +15,17 @@
         variant="tonal"
         prepend-icon="mdi-refresh"
         :loading="loading"
-        @click="loadReaders"
+        @click="loadAllData"
       >
         Tải lại
+      </v-btn>
+
+      <v-btn
+        color="primary"
+        prepend-icon="mdi-plus"
+        @click="openCreateDialog"
+      >
+        Thêm độc giả
       </v-btn>
     </div>
 
@@ -49,10 +57,10 @@
         <v-card class="stat-card pa-5 d-flex align-center" rounded="xl">
           <div class="stat-info">
             <div class="stat-label text-uppercase mb-1">Tài khoản hoạt động</div>
-            <div class="stat-value text-success font-weight-black">{{ activeUserCount }}</div>
+            <div class="stat-value text-primary font-weight-black">{{ activeUserCount }}</div>
           </div>
           <v-spacer />
-          <div class="stat-icon-wrapper-glow success-glowing-icon">
+          <div class="stat-icon-wrapper-glow info-glowing-icon">
             <v-icon icon="mdi-account-check" size="30" />
           </div>
         </v-card>
@@ -62,10 +70,10 @@
         <v-card class="stat-card pa-5 d-flex align-center" rounded="xl">
           <div class="stat-info">
             <div class="stat-label text-uppercase mb-1">Tài khoản bị khóa</div>
-            <div class="stat-value text-error font-weight-black">{{ lockedUserCount }}</div>
+            <div class="stat-value text-primary font-weight-black">{{ lockedUserCount }}</div>
           </div>
           <v-spacer />
-          <div class="stat-icon-wrapper-glow error-glowing-icon">
+          <div class="stat-icon-wrapper-glow info-glowing-icon">
             <v-icon icon="mdi-account-lock" size="30" />
           </div>
         </v-card>
@@ -75,10 +83,10 @@
         <v-card class="stat-card pa-5 d-flex align-center" rounded="xl">
           <div class="stat-info">
             <div class="stat-label text-uppercase mb-1">Thẻ hết hạn</div>
-            <div class="stat-value text-amber-darken-3 font-weight-black">{{ expiredCardCount }}</div>
+            <div class="stat-value text-primary font-weight-black">{{ expiredCardCount }}</div>
           </div>
           <v-spacer />
-          <div class="stat-icon-wrapper-glow amber-glowing-icon">
+          <div class="stat-icon-wrapper-glow info-glowing-icon">
             <v-icon icon="mdi-card-account-details-star" size="30" />
           </div>
         </v-card>
@@ -752,6 +760,15 @@ const paginatedReaders = computed(() => {
 watch([keyword, userStatusFilter, cardStatusFilter, expiredFromDate, expiredToDate, itemsPerPage], () => {
   page.value = 1
 })
+
+async function loadAllData() {
+  await loadReaders()
+}
+
+async function openCreateDialog() {
+  success.value = false
+  message.value = 'Tính năng tạo tài khoản độc giả hiện chưa được hỗ trợ. Vui lòng dùng trang Đăng ký.'
+}
 
 async function loadReaders() {
   loading.value = true

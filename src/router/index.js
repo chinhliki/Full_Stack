@@ -16,6 +16,7 @@ import OverdueListView from '../views/borrows/OverdueListView.vue'
 
 import MyBorrowHistoryView from '../views/reader/MyBorrowHistoryView.vue'
 import MyLibraryCardView from '../views/reader/MyLibraryCardView.vue'
+import GamificationView from '../views/reader/GamificationView.vue'
 
 const routes = [
   {
@@ -82,6 +83,11 @@ const routes = [
       {
         path: 'my-card',
         component: MyLibraryCardView,
+        meta: { roles: ['Reader'] }
+      },
+      {
+        path: 'gamification',
+        component: GamificationView,
         meta: { roles: ['Reader'] }
       }
     ]

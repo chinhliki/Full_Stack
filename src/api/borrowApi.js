@@ -31,5 +31,26 @@ export const borrowApi = {
 
   payFine(id) {
     return api.put(`/api/circulation/borrows/${id}/pay-fine`)
+  },
+
+  // Batch borrow from cart — POST /api/circulation/borrows/batch
+  // body: { readerId, borrowDate, books: [{ bookId, dueDate }] }
+  createFromCart(data) {
+    return api.post('/api/circulation/borrows/batch', data, { timeout: 60000 })
+  },
+
+  // Reserve a book — POST /api/circulation/borrows/reserve
+  // body: { readerId, bookId }
+  // response: { reservationId, position, estimatedWaitDays }
+  reserve(data) {
+    return api.post('/api/circulation/borrows/reserve', data)
+  },
+
+  getMyReservations() {
+    return api.get('/api/circulation/borrows/reservations/me')
+  },
+
+  cancelReservation(reservationId) {
+    return api.delete(`/api/circulation/borrows/reservations/${reservationId}`)
   }
 }

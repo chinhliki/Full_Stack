@@ -1,10 +1,20 @@
 <template>
   <div>
+    <!-- BorrowCartDrawer — FAB + slide drawer (Reader only) -->
+    <BorrowCartDrawer
+      v-if="isReader"
+      ref="cartDrawerRef"
+      :my-active-borrow-count="myActiveBorrowCount"
+      @checkout-success="onCartCheckoutSuccess"
+    />
+
     <div class="action-bar">
       <div>
-        <div class="page-title">Quản lý sách</div>
+        <div class="page-title">{{ isReader ? 'Danh sách sách' : 'Quản lý sách' }}</div>
         <div class="page-subtitle">
-          Quản lý thông tin sách, ảnh bìa, số lượng bản và trạng thái sẵn sàng cho mượn
+          {{ isReader
+            ? 'Tìm và thêm sách vào giỏ mượn, hoặc đặt chỗ khi sách tạm hết'
+            : 'Quản lý thông tin sách, ảnh bìa, số lượng bản và trạng thái sẵn sàng cho mượn' }}
         </div>
       </div>
 
@@ -114,14 +124,22 @@
       </v-col>
 
       <v-col cols="12" sm="6" md="3">
-        <v-card class="stat-card pa-5 d-flex align-center" rounded="xl">
+        <!-- Admin: checkbox selected count | Reader: cart count -->
+        <v-card
+          class="stat-card pa-5 d-flex align-center"
+          :class="{ 'cursor-pointer': isReader && cart.count > 0 }"
+          rounded="xl"
+          @click="isReader && cart.count > 0 ? cartDrawerRef?.open() : null"
+        >
           <div class="stat-info">
-            <div class="stat-label text-uppercase mb-1">Đã chọn</div>
-            <div class="stat-value text-purple font-weight-black text-h4">{{ selectedBookIds.length }}</div>
+            <div class="stat-label text-uppercase mb-1">{{ isReader ? 'Trong giỏ' : 'Đã chọn' }}</div>
+            <div class="stat-value text-purple font-weight-black text-h4">
+              {{ isReader ? cart.count : selectedBookIds.length }}
+            </div>
           </div>
           <v-spacer />
           <div class="stat-icon-wrapper-glow purple-glowing-icon">
-            <v-icon icon="mdi-checkbox-marked-circle-outline" size="30" />
+            <v-icon :icon="isReader ? 'mdi-cart' : 'mdi-checkbox-marked-circle-outline'" size="30" />
           </div>
         </v-card>
       </v-col>
@@ -359,21 +377,10 @@
             </td>
 
             <td v-if="isReader" class="text-center">
-              <v-tooltip :text="myActiveBorrowCount >= 5 ? 'Đã đạt giới hạn 5 quyển' : !isBookAvailable(book) ? 'Sách đã hết' : 'Đăng ký mượn sách này'">
-                <template #activator="{ props }">
-                  <v-btn
-                    v-bind="props"
-                    size="small"
-                    color="primary"
-                    variant="tonal"
-                    prepend-icon="mdi-book-plus"
-                    :disabled="!isBookAvailable(book) || myActiveBorrowCount >= 5"
-                    @click="openBorrowDialog(book)"
-                  >
-                    Mượn sách
-                  </v-btn>
-                </template>
-              </v-tooltip>
+              <BookActionBtn
+                :book="book"
+                :my-active-borrow-count="myActiveBorrowCount"
+              />
             </td>
           </tr>
 
@@ -786,8 +793,13 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { bookApi } from '../../api/bookApi'
 import { borrowApi } from '../../api/borrowApi'
 import { useAuthStore } from '../../stores/authStore'
+import { useCartStore } from '../../stores/cartStore'
+import BorrowCartDrawer from '../../components/BorrowCartDrawer.vue'
+import BookActionBtn from '../../components/BookActionBtn.vue'
 
 const auth = useAuthStore()
+const cart = useCartStore()
+const cartDrawerRef = ref(null)
 
 const books = ref([])
 const selectedBookIds = ref([])
@@ -923,6 +935,13 @@ async function confirmBorrowBook() {
   } finally {
     borrowing.value = false
   }
+}
+
+async function onCartCheckoutSuccess() {
+  success.value = true
+  message.value = 'Đã gửi yêu cầu mượn thành công! Đến quầy thủ thư để nhận sách.'
+  await loadMyActiveBorrowCount()
+  await loadBooks()
 }
 
 const availableBookCount = computed(() =>

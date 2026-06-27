@@ -21,6 +21,15 @@
       </v-btn>
 
       <v-btn
+        color="secondary"
+        variant="tonal"
+        prepend-icon="mdi-qrcode-scan"
+        @click="openQRScanDialog"
+      >
+        Quét QR
+      </v-btn>
+
+      <v-btn
         color="primary"
         prepend-icon="mdi-plus"
         @click="openCreateDialog"
@@ -621,6 +630,46 @@
       </v-card>
     </v-dialog>
 
+    <!-- Dialog quét mã QR độc giả -->
+    <v-dialog v-model="qrScanDialog" max-width="520">
+      <v-card rounded="xl">
+        <v-card-title class="d-flex align-center">
+          <v-icon icon="mdi-qrcode-scan" color="secondary" class="mr-2" />
+          Quét mã QR thẻ độc giả
+
+          <v-spacer />
+
+          <v-btn icon="mdi-close" variant="text" @click="qrScanDialog = false" />
+        </v-card-title>
+
+        <v-divider />
+
+        <v-card-text class="pt-4">
+          <div class="text-body-2 text-grey mb-4">
+            Hướng camera vào mã QR trên thẻ thư viện của độc giả. Hệ thống sẽ tự động mở form tạo phiếu mượn.
+          </div>
+
+          <QRScanner v-if="qrScanDialog" @scanned="onQRScanned" />
+
+          <v-alert
+            v-if="qrMessage"
+            :type="qrSuccess ? 'success' : 'error'"
+            variant="tonal"
+            rounded="lg"
+            class="mt-4"
+            density="compact"
+          >
+            {{ qrMessage }}
+          </v-alert>
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer />
+          <v-btn variant="text" @click="qrScanDialog = false">Đóng</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <!-- Dialog chi tiết -->
     <v-dialog v-model="detailDialog" max-width="760">
       <v-card v-if="selectedBorrow">
@@ -713,6 +762,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { borrowApi } from '../../api/borrowApi'
 import { bookApi } from '../../api/bookApi'
 import { readerApi } from '../../api/readerApi'
+import QRScanner from '../../components/QRScanner.vue'
 
 const borrows = ref([])
 const books = ref([])
@@ -1045,6 +1095,40 @@ function validateCreateForm() {
 function rejectReturn(borrow) {
   success.value = false
   message.value = `Đã ghi nhận sự cố trả sách "${borrow.bookTitle}". Vui lòng liên hệ độc giả để xử lý.`
+}
+
+// QR Scanner
+const qrScanDialog = ref(false)
+const qrMessage = ref('')
+const qrSuccess = ref(false)
+
+function openQRScanDialog() {
+  qrMessage.value = ''
+  qrSuccess.value = false
+  qrScanDialog.value = true
+}
+
+function onQRScanned(scannedValue) {
+  const reader = readers.value.find(r =>
+    r.cardNumber === scannedValue ||
+    r.studentCode === scannedValue
+  )
+
+  if (!reader) {
+    qrSuccess.value = false
+    qrMessage.value = `Không tìm thấy độc giả với mã thẻ "${scannedValue}"`
+    return
+  }
+
+  qrScanDialog.value = false
+
+  createForm.value = {
+    readerId: reader.userId,
+    bookId: '',
+    borrowDate: toDateTimeLocal(new Date()),
+    dueDate: toDateTimeLocal(addDays(new Date(), 7))
+  }
+  createDialog.value = true
 }
 
 function getReaderCode(borrow) {

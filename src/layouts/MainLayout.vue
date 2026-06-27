@@ -9,15 +9,30 @@
       class="professional-drawer"
       :class="{ 'drawer-expanded': !rail }"
     >
-      <div class="sidebar-brand" style="cursor: pointer;" @click="router.push('/')">
-        <div class="sidebar-logo">
-          <v-icon icon="mdi-library" size="25" />
+      <div class="sidebar-brand d-flex align-center justify-space-between">
+        <div class="d-flex align-center ga-3">
+          <div class="sidebar-logo">
+            <v-icon icon="mdi-library" size="25" />
+          </div>
+
+          <div v-if="!rail" class="sidebar-brand-info">
+            <div class="sidebar-title">Library System</div>
+            <div class="sidebar-subtitle">Digital Microservices</div>
+          </div>
         </div>
 
-        <div v-if="!rail" class="sidebar-brand-info">
-          <div class="sidebar-title">Library System</div>
-          <div class="sidebar-subtitle">Digital Microservices</div>
-        </div>
+        <v-tooltip text="Trang chủ" location="bottom" v-if="!rail">
+          <template #activator="{ props }">
+            <v-btn
+              v-bind="props"
+              icon="mdi-home"
+              size="32"
+              variant="text"
+              class="sidebar-home-btn text-white"
+              @click="router.push('/')"
+            />
+          </template>
+        </v-tooltip>
       </div>
 
       <v-divider class="mx-4 mb-3" opacity="0.18" />
@@ -45,12 +60,12 @@
           </template>
         </v-tooltip>
 
-        <v-tooltip :disabled="!rail" location="right" text="Lịch sử mượn" v-if="isReader">
+        <v-tooltip :disabled="!rail" location="right" text="Phiếu mượn của tôi" v-if="isReader">
           <template #activator="{ props }">
             <v-list-item
               v-bind="props"
-              title="Lịch sử mượn của tôi"
-              prepend-icon="mdi-history"
+              title="Phiếu mượn của tôi"
+              prepend-icon="mdi-clipboard-text"
               to="/app/my-borrows"
             />
           </template>
@@ -63,6 +78,17 @@
               title="Thẻ thư viện của tôi"
               prepend-icon="mdi-card-account-details"
               to="/app/my-card"
+            />
+          </template>
+        </v-tooltip>
+
+        <v-tooltip :disabled="!rail" location="right" text="Thành tích & XP" v-if="isReader">
+          <template #activator="{ props }">
+            <v-list-item
+              v-bind="props"
+              title="Thành tích của tôi"
+              prepend-icon="mdi-trophy-outline"
+              to="/app/gamification"
             />
           </template>
         </v-tooltip>
@@ -211,31 +237,19 @@
     >
       <v-app-bar-nav-icon @click="rail = !rail" />
 
-      <div class="ml-2 d-flex align-center ga-2">
-        <div>
-          <div class="font-weight-bold text-subtitle-1 app-bar-title-text">
-            Hệ thống quản lý thư viện số
-          </div>
-          <div class="text-caption text-grey-darken-1">
-            ASP.NET Core · VueJS · SQL Server · API Gateway
-          </div>
+      <div class="ml-4">
+        <div class="font-weight-bold text-subtitle-1 app-bar-title-text">
+          Hệ thống quản lý thư viện số
         </div>
-
-        <v-tooltip text="Trang chủ" location="bottom">
-          <template #activator="{ props }">
-            <v-btn
-              v-bind="props"
-              icon="mdi-home"
-              size="small"
-              variant="text"
-              class="home-icon-btn"
-              @click="router.push('/')"
-            />
-          </template>
-        </v-tooltip>
+        <div class="text-caption text-grey-darken-1">
+          ASP.NET Core · VueJS · SQL Server · API Gateway
+        </div>
       </div>
 
       <v-spacer />
+
+      <!-- Notification Bell (visible for all logged-in users) -->
+      <NotificationBell class="mr-1" />
 
       <v-btn
         icon
@@ -265,6 +279,11 @@ import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/authStore'
 import { useTheme } from 'vuetify'
+import { useSignalR } from '../composables/useSignalR'
+import NotificationBell from '../components/NotificationBell.vue'
+
+// Manages SignalR lifecycle: auto-connect on login, disconnect on logout
+useSignalR()
 
 const drawer = ref(true)
 const rail = ref(false)

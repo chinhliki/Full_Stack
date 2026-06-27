@@ -49,10 +49,10 @@
         <v-card class="stat-card pa-5 d-flex align-center" rounded="xl">
           <div class="stat-info">
             <div class="stat-label text-uppercase mb-1">Tiền phạt chưa thu</div>
-            <div class="stat-value text-error font-weight-black fine-total">{{ formatMoney(totalUnpaidFine) }}</div>
+            <div class="stat-value text-amber-darken-3 font-weight-black fine-total">{{ formatMoney(totalUnpaidFine) }}</div>
           </div>
           <v-spacer />
-          <div class="stat-icon-wrapper-glow error-glowing-icon">
+          <div class="stat-icon-wrapper-glow amber-glowing-icon">
             <v-icon icon="mdi-cash-alert" size="30" />
           </div>
         </v-card>
@@ -62,10 +62,10 @@
         <v-card class="stat-card pa-5 d-flex align-center" rounded="xl">
           <div class="stat-info">
             <div class="stat-label text-uppercase mb-1">Phạt trung bình / phiếu</div>
-            <div class="stat-value text-purple font-weight-black fine-total">{{ formatMoney(averageFine) }}</div>
+            <div class="stat-value text-amber-darken-3 font-weight-black fine-total">{{ formatMoney(averageFine) }}</div>
           </div>
           <v-spacer />
-          <div class="stat-icon-wrapper-glow purple-glowing-icon">
+          <div class="stat-icon-wrapper-glow amber-glowing-icon">
             <v-icon icon="mdi-chart-bar" size="30" />
           </div>
         </v-card>

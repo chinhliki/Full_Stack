@@ -36,10 +36,10 @@
         <v-card class="stat-card pa-5 d-flex align-center" rounded="xl">
           <div class="stat-info">
             <div class="stat-label text-uppercase mb-1">Tổng phiếu quá hạn</div>
-            <div class="stat-value text-error font-weight-black">{{ overdueBorrows.length }}</div>
+            <div class="stat-value text-purple font-weight-black">{{ overdueBorrows.length }}</div>
           </div>
           <v-spacer />
-          <div class="stat-icon-wrapper-glow error-glowing-icon">
+          <div class="stat-icon-wrapper-glow purple-glowing-icon">
             <v-icon icon="mdi-alert-circle" size="30" />
           </div>
         </v-card>
@@ -49,10 +49,10 @@
         <v-card class="stat-card pa-5 d-flex align-center" rounded="xl">
           <div class="stat-info">
             <div class="stat-label text-uppercase mb-1">Quá hạn ≤ 7 ngày</div>
-            <div class="stat-value text-amber-darken-3 font-weight-black">{{ shortOverdueCount }}</div>
+            <div class="stat-value text-purple font-weight-black">{{ shortOverdueCount }}</div>
           </div>
           <v-spacer />
-          <div class="stat-icon-wrapper-glow amber-glowing-icon">
+          <div class="stat-icon-wrapper-glow purple-glowing-icon">
             <v-icon icon="mdi-clock-alert-outline" size="30" />
           </div>
         </v-card>
@@ -62,10 +62,10 @@
         <v-card class="stat-card pa-5 d-flex align-center" rounded="xl">
           <div class="stat-info">
             <div class="stat-label text-uppercase mb-1">Quá hạn &gt; 7 ngày</div>
-            <div class="stat-value text-error font-weight-black">{{ longOverdueCount }}</div>
+            <div class="stat-value text-purple font-weight-black">{{ longOverdueCount }}</div>
           </div>
           <v-spacer />
-          <div class="stat-icon-wrapper-glow error-glowing-icon">
+          <div class="stat-icon-wrapper-glow purple-glowing-icon">
             <v-icon icon="mdi-calendar-alert" size="30" />
           </div>
         </v-card>

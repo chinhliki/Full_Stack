@@ -2,9 +2,9 @@
   <div>
     <div class="action-bar">
       <div>
-        <div class="page-title">Lịch sử mượn của tôi</div>
+        <div class="page-title">Phiếu mượn của tôi</div>
         <div class="page-subtitle">
-          Theo dõi sách đang mượn, lịch sử trả sách và phí phạt phát sinh
+          Theo dõi các phiếu mượn sách, thời hạn trả và tình trạng phí phạt của bạn
         </div>
       </div>
 
@@ -31,16 +31,17 @@
       {{ message }}
     </v-alert>
 
+    <!-- Stats Cards Row -->
     <v-row class="mb-5">
       <v-col cols="12" sm="6" md="3">
         <v-card class="stat-card pa-5 d-flex align-center" rounded="xl">
           <div class="stat-info">
-            <div class="stat-label text-uppercase mb-1">Tổng phiếu mượn</div>
-            <div class="stat-value text-primary font-weight-black">{{ borrows.length }}</div>
+            <div class="stat-label text-uppercase mb-1">Tổng số phiếu</div>
+            <div class="stat-value text-purple font-weight-black">{{ groupedSlips.length }}</div>
           </div>
           <v-spacer />
-          <div class="stat-icon-wrapper-glow info-glowing-icon">
-            <v-icon icon="mdi-clipboard-text-outline" size="30" />
+          <div class="stat-icon-wrapper-glow purple-glowing-icon">
+            <v-icon icon="mdi-clipboard-text-multiple" size="30" />
           </div>
         </v-card>
       </v-col>
@@ -81,227 +82,153 @@
           </div>
           <v-spacer />
           <div class="stat-icon-wrapper-glow amber-glowing-icon">
-            <v-icon icon="mdi-cash-alert" size="30" />
+            <v-icon icon="mdi-cash-minus" size="28" class="fine-icon-special" />
           </div>
         </v-card>
       </v-col>
     </v-row>
 
-    <!-- Cảnh báo sắp đạt giới hạn mượn -->
-    <v-alert
-      v-if="borrowingCount >= 4"
-      :type="borrowingCount >= 5 ? 'error' : 'warning'"
-      variant="tonal"
-      class="mb-4"
-      rounded="lg"
-      :icon="borrowingCount >= 5 ? 'mdi-alert-circle' : 'mdi-alert'"
-    >
-      <template v-if="borrowingCount >= 5">
-        Bạn đang mượn tối đa <strong>5 quyển</strong>. Vui lòng trả bớt sách để có thể mượn thêm.
-      </template>
-      <template v-else>
-        Bạn đang mượn <strong>{{ borrowingCount }}/5 quyển</strong>. Còn có thể mượn thêm {{ 5 - borrowingCount }} quyển.
-      </template>
-    </v-alert>
-
+    <!-- Filter Card -->
     <v-card class="soft-card pa-5 mb-5">
       <v-row align="center">
-        <v-col cols="12" md="5">
+        <v-col cols="12" md="4">
           <v-text-field
             v-model="keyword"
-            label="Tìm theo tên sách"
+            label="Tìm mã phiếu hoặc tên sách"
             prepend-inner-icon="mdi-magnify"
             clearable
             hide-details
           />
         </v-col>
 
-        <v-col cols="12" md="3">
+        <v-col cols="12" sm="6" md="3">
           <v-select
             v-model="statusFilter"
-            label="Trạng thái"
+            label="Trạng thái phiếu"
             :items="statusOptions"
             clearable
             hide-details
           />
         </v-col>
 
-        <v-col cols="12" md="4">
-          <div class="d-flex align-center ga-3">
-            <div class="text-body-2 text-grey-darken-1">
-              Hiển thị <b>{{ filteredBorrows.length }}</b> / {{ borrows.length }} phiếu
-            </div>
-            <v-spacer />
-            <v-btn
-              color="secondary"
-              variant="tonal"
-              size="small"
-              prepend-icon="mdi-filter-remove"
-              @click="resetFilters"
-            >
-              Xóa lọc
-            </v-btn>
-          </div>
+        <v-col cols="12" sm="6" md="3">
+          <v-select
+            v-model="timeFilter"
+            label="Thời gian mượn"
+            :items="timeOptions"
+            clearable
+            hide-details
+          />
+        </v-col>
+
+        <v-col cols="12" md="2">
+          <v-btn
+            color="secondary"
+            variant="tonal"
+            block
+            prepend-icon="mdi-filter-remove"
+            @click="resetFilters"
+            class="h-100 py-3"
+            style="min-height: 56px;"
+          >
+            Xóa lọc
+          </v-btn>
         </v-col>
       </v-row>
     </v-card>
 
-    <v-card class="table-card" :class="{ 'table-card-loading': loading }">
+    <!-- Slips Grid list -->
+    <div class="slips-container position-relative">
       <v-progress-linear
         v-show="loading"
         indeterminate
         color="primary"
         height="3"
         class="position-absolute"
-        style="z-index: 2; top: 0; left: 0; right: 0;"
+        style="z-index: 2; top: -10px; left: 0; right: 0;"
       />
-      <v-table>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Sách</th>
-            <th>Ngày mượn</th>
-            <th>Hạn trả</th>
-            <th>Ngày trả</th>
-            <th>Trạng thái</th>
-            <th>Quá hạn</th>
-            <th>Tiền phạt</th>
-            <th>Trạng thái phạt</th>
-            <th class="text-center">Thao tác</th>
-          </tr>
-        </thead>
 
-        <tbody>
-          <tr v-for="(item, index) in paginatedBorrows" :key="item.id">
-            <td>
-              <span class="index-badge">{{ (page - 1) * itemsPerPage + index + 1 }}</span>
-            </td>
+      <v-row class="mb-5 slip-list-wrapper">
+        <v-col
+          cols="12"
+          sm="6"
+          md="4"
+          v-for="slip in paginatedSlips"
+          :key="slip.id"
+          class="slip-card-col"
+        >
+          <v-card class="slip-card pa-4" @click="openSlipDetail(slip)">
+            <div class="d-flex align-center justify-space-between mb-3">
+              <span class="slip-code font-weight-bold text-primary">Phiếu: #{{ shortId(slip.id) }}</span>
+              <v-chip :color="getSlipStatusColor(slip.status)" size="small" variant="tonal">
+                <v-icon start :icon="getSlipStatusIcon(slip.status)" size="14" />
+                {{ getSlipStatusText(slip.status) }}
+              </v-chip>
+            </div>
 
-            <td>
-              <div class="d-flex align-center">
-                <div class="book-icon-wrap mr-3">
-                  <v-icon icon="mdi-book-open-page-variant" color="primary" size="22" />
-                </div>
+            <v-divider class="mb-3" opacity="0.08" />
 
-                <div>
-                  <div class="font-weight-bold">
-                    {{ item.bookTitle }}
-                  </div>
-                  <div class="text-caption text-grey-darken-1">
-                    Mã phiếu: {{ shortId(item.id) }}
-                  </div>
-                </div>
-              </div>
-            </td>
+            <div class="slip-info-row mb-2 d-flex align-center">
+              <v-icon icon="mdi-calendar-import" size="16" class="mr-2 text-grey-darken-1" />
+              <span class="text-caption text-grey-darken-1">Ngày mượn:</span>
+              <span class="text-body-2 font-weight-bold ml-1 text-secondary-dark">{{ formatDate(slip.borrowDate) }}</span>
+            </div>
 
-            <td>{{ formatDate(item.borrowDate) }}</td>
-            <td>
-              <span :class="isItemOverdue(item) ? 'text-error font-weight-bold' : ''">
-                {{ formatDate(item.dueDate) }}
+            <div class="slip-info-row mb-2 d-flex align-center">
+              <v-icon icon="mdi-calendar-export" size="16" class="mr-2 text-grey-darken-1" />
+              <span class="text-caption text-grey-darken-1">Hạn trả gốc:</span>
+              <span
+                class="text-body-2 font-weight-bold ml-1"
+                :class="slip.status === 'Overdue' ? 'text-error' : 'text-secondary-dark'"
+              >
+                {{ formatDate(slip.dueDate) }}
               </span>
-            </td>
-            <td>{{ item.returnDate ? formatDate(item.returnDate) : '-' }}</td>
+            </div>
 
-            <td>
-              <v-chip
-                :color="item.status === 'Borrowed' ? 'warning' : 'success'"
-                size="small"
-                variant="tonal"
+            <div class="slip-info-row mb-3 d-flex align-center">
+              <v-icon icon="mdi-book-multiple" size="16" class="mr-2 text-grey-darken-1" />
+              <span class="text-caption text-grey-darken-1">Số lượng:</span>
+              <span class="text-body-2 font-weight-black ml-1 text-primary">{{ slip.bookCount }} cuốn sách</span>
+            </div>
+
+            <v-divider class="my-3" opacity="0.08" />
+
+            <div class="d-flex align-center justify-space-between">
+              <span class="text-caption text-grey-darken-1">Tổng phạt tích lũy:</span>
+              <span
+                class="font-weight-black text-body-2"
+                :class="slip.totalFineAmount > 0 ? 'text-error' : 'text-success'"
               >
-                <v-icon
-                  start
-                  :icon="item.status === 'Borrowed' ? 'mdi-book-clock' : 'mdi-check-circle'"
-                />
-                {{ getBorrowStatusText(item.status) }}
-              </v-chip>
-            </td>
-
-            <td>
-              <v-chip
-                :color="isItemOverdue(item) ? 'error' : 'success'"
-                size="small"
-                variant="tonal"
-              >
-                <v-icon
-                  start
-                  :icon="isItemOverdue(item) ? 'mdi-clock-alert-outline' : 'mdi-check'"
-                />
-                {{ isItemOverdue(item) ? 'Quá hạn' : 'Đúng hạn' }}
-              </v-chip>
-            </td>
-
-            <td>
-              <span :class="Number(item.fineAmount || 0) > 0 ? 'text-error font-weight-bold' : ''">
-                {{ formatMoney(item.fineAmount) }}
+                {{ formatMoney(slip.totalFineAmount) }}
               </span>
-            </td>
+            </div>
+          </v-card>
+        </v-col>
 
-            <td>
-              <v-chip
-                :color="getFineStatusColor(item)"
-                size="small"
-                variant="tonal"
-              >
-                {{ getFineStatusText(item) }}
-              </v-chip>
-            </td>
+        <!-- Empty State -->
+        <v-col cols="12" v-if="filteredSlips.length === 0 && !loading" class="text-center pa-10">
+          <v-card class="soft-card pa-8 d-flex flex-column align-center justify-center">
+            <v-icon icon="mdi-clipboard-text-search-outline" size="56" color="grey-darken-1" />
+            <div class="text-subtitle-1 font-weight-bold mt-3">Không tìm thấy phiếu mượn nào</div>
+            <div class="text-caption text-grey">Bạn chưa mượn sách hoặc bộ lọc đang chọn không trả về kết quả.</div>
+          </v-card>
+        </v-col>
+      </v-row>
 
-            <td class="text-center">
-              <v-tooltip text="Báo trả sách" v-if="item.status === 'Borrowed'">
-                <template #activator="{ props }">
-                  <v-btn
-                    v-bind="props"
-                    icon="mdi-book-arrow-left"
-                    size="small"
-                    color="primary"
-                    variant="tonal"
-                    :loading="returningId === item.id"
-                    @click="openReturnDialog(item)"
-                  />
-                </template>
-              </v-tooltip>
-
-              <v-chip
-                v-if="item.status === 'Returned'"
-                color="success"
-                variant="tonal"
-                size="small"
-              >
-                <v-icon start icon="mdi-check-circle" />
-                Đã trả
-              </v-chip>
-            </td>
-          </tr>
-
-          <tr v-if="filteredBorrows.length === 0">
-            <td colspan="10" class="text-center pa-8">
-              <v-icon icon="mdi-database-search-outline" size="42" color="grey" />
-              <div class="text-subtitle-1 font-weight-bold mt-2">
-                Không có dữ liệu phù hợp
-              </div>
-              <div class="text-body-2 text-grey-darken-1">
-                Bạn chưa có lịch sử mượn sách hoặc bộ lọc chưa phù hợp.
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </v-table>
-
-      <v-divider />
-
-      <div class="d-flex align-center justify-space-between flex-wrap pa-4 ga-3">
+      <!-- Pagination Footer -->
+      <v-card class="soft-card pa-4 d-flex align-center justify-space-between flex-wrap ga-3" v-if="filteredSlips.length > 0">
         <div class="text-body-2 text-grey-darken-1">
-          Hiển thị <b>{{ paginatedBorrows.length }}</b> / <b>{{ filteredBorrows.length }}</b> phiếu
+          Hiển thị <b>{{ paginatedSlips.length }}</b> / <b>{{ filteredSlips.length }}</b> phiếu mượn
         </div>
 
         <div class="d-flex align-center ga-3">
           <v-select
             v-model="itemsPerPage"
-            :items="[5, 10, 20]"
+            :items="[6, 12, 24]"
             label="Số dòng"
             density="compact"
             hide-details
-            style="width: 110px;"
+            style="width: 100px;"
           />
 
           <v-pagination
@@ -312,12 +239,127 @@
             total-visible="5"
           />
         </div>
-      </div>
-    </v-card>
+      </v-card>
+    </div>
+
+    <!-- Slip Detail Dialog -->
+    <v-dialog v-model="detailDialog" max-width="720" transition="dialog-transition">
+      <v-card class="scale-in-dialog" rounded="xl" v-if="selectedSlip">
+        <v-card-title class="d-flex align-center pa-5">
+          <v-icon icon="mdi-clipboard-text-outline" color="primary" class="mr-2" />
+          <div>
+            <div class="font-weight-black text-h6">Chi tiết phiếu mượn</div>
+            <div class="text-caption text-grey">Mã phiếu: #{{ selectedSlip.id }}</div>
+          </div>
+          <v-spacer />
+          <v-btn icon="mdi-close" variant="text" @click="detailDialog = false" />
+        </v-card-title>
+
+        <v-divider />
+
+        <v-card-text class="pa-5">
+          <!-- Quick summary inside modal -->
+          <v-row class="mb-4">
+            <v-col cols="12" sm="6" md="4">
+              <div class="info-box">
+                <div class="info-label">Ngày mượn</div>
+                <div class="info-value">{{ formatDate(selectedSlip.borrowDate) }}</div>
+              </div>
+            </v-col>
+            <v-col cols="12" sm="6" md="4">
+              <div class="info-box">
+                <div class="info-label">Hạn trả gốc</div>
+                <div class="info-value" :class="selectedSlip.status === 'Overdue' ? 'text-error' : ''">
+                  {{ formatDate(selectedSlip.dueDate) }}
+                </div>
+              </div>
+            </v-col>
+            <v-col cols="12" sm="6" md="4">
+              <div class="info-box">
+                <div class="info-label">Trạng thái phiếu</div>
+                <div class="info-value">
+                  <v-chip :color="getSlipStatusColor(selectedSlip.status)" size="small" variant="tonal">
+                    {{ getSlipStatusText(selectedSlip.status) }}
+                  </v-chip>
+                </div>
+              </div>
+            </v-col>
+          </v-row>
+
+          <div class="text-subtitle-1 font-weight-black mb-3">Danh sách sách mượn</div>
+
+          <v-table class="details-table border rounded-lg overflow-hidden">
+            <thead>
+              <tr>
+                <th>Tên sách</th>
+                <th>Hạn trả</th>
+                <th>Ngày trả thực tế</th>
+                <th>Trạng thái</th>
+                <th>Phí phạt</th>
+                <th class="text-center">Hành động</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="item in selectedSlip.items" :key="item.id">
+                <td class="font-weight-bold">{{ item.bookTitle }}</td>
+                <td>
+                  <span :class="isItemOverdue(item) ? 'text-error font-weight-bold' : ''">
+                    {{ formatDate(item.dueDate) }}
+                  </span>
+                </td>
+                <td>{{ item.returnDate ? formatDate(item.returnDate) : '-' }}</td>
+                <td>
+                  <v-chip
+                    :color="item.status === 'Borrowed' ? 'warning' : 'success'"
+                    size="x-small"
+                    variant="tonal"
+                  >
+                    {{ getBorrowStatusText(item.status) }}
+                  </v-chip>
+                </td>
+                <td>
+                  <span :class="Number(item.fineAmount || 0) > 0 ? 'text-error font-weight-bold' : 'text-success'">
+                    {{ formatMoney(item.fineAmount) }}
+                  </span>
+                </td>
+                <td class="text-center">
+                  <v-btn
+                    v-if="item.status === 'Borrowed'"
+                    icon="mdi-book-arrow-left"
+                    size="x-small"
+                    color="primary"
+                    variant="tonal"
+                    :loading="returningId === item.id"
+                    @click="openReturnDialog(item)"
+                  />
+                  <v-chip
+                    v-else
+                    color="success"
+                    variant="tonal"
+                    size="x-small"
+                  >
+                    Đã trả xong
+                  </v-chip>
+                </td>
+              </tr>
+            </tbody>
+          </v-table>
+        </v-card-text>
+
+        <v-divider />
+
+        <v-card-actions class="pa-4">
+          <v-spacer />
+          <v-btn variant="tonal" color="secondary" @click="detailDialog = false">
+            Đóng
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
     <!-- Dialog báo trả sách -->
     <v-dialog v-model="returnDialog" max-width="520">
-      <v-card v-if="selectedBorrow">
+      <v-card class="scale-in-dialog" rounded="xl" v-if="selectedBorrow">
         <v-card-title class="d-flex align-center">
           <v-icon icon="mdi-book-arrow-left" color="primary" class="mr-2" />
           Báo trả sách
@@ -404,12 +446,16 @@ import { borrowApi } from '../../api/borrowApi'
 const borrows = ref([])
 const keyword = ref('')
 const statusFilter = ref(null)
+const timeFilter = ref(null)
 const loading = ref(false)
 const message = ref('')
 const success = ref(true)
 
 const page = ref(1)
-const itemsPerPage = ref(10)
+const itemsPerPage = ref(6)
+
+const detailDialog = ref(false)
+const selectedSlip = ref(null)
 
 const returnDialog = ref(false)
 const selectedBorrow = ref(null)
@@ -419,52 +465,138 @@ const returnDate = ref('')
 const finePerLateDay = 5000
 
 const statusOptions = [
+  { title: 'Tất cả trạng thái', value: null },
   { title: 'Đang mượn', value: 'Borrowed' },
-  { title: 'Đã trả', value: 'Returned' }
+  { title: 'Đã trả', value: 'Returned' },
+  { title: 'Quá hạn', value: 'Overdue' }
+]
+
+const timeOptions = [
+  { title: 'Tất cả thời gian', value: null },
+  { title: 'Tháng này', value: 'thisMonth' },
+  { title: '3 tháng gần nhất', value: 'threeMonths' }
 ]
 
 const borrowingCount = computed(() =>
-  borrows.value.filter(x => x.status === 'Borrowed').length
+  groupedSlips.value.filter(s => s.status === 'Borrowed' || s.status === 'Overdue').length
 )
 
 const returnedCount = computed(() =>
-  borrows.value.filter(x => x.status === 'Returned').length
+  groupedSlips.value.filter(s => s.status === 'Returned').length
 )
 
 const totalFine = computed(() =>
   borrows.value.reduce((sum, item) => sum + Number(item.fineAmount || 0), 0)
 )
 
-const filteredBorrows = computed(() => {
-  let data = [...borrows.value]
+// Group flat book loans into virtual borrow slips.
+// Key = date string (YYYY-MM-DD) so borrowDate timestamp precision differences are ignored.
+// Stable slip key stored separately from item.id to survive reload order changes.
+const groupedSlips = computed(() => {
+  const groups = {}
+  const now = new Date()
+
+  borrows.value.forEach(item => {
+    // Normalize to date-only so millisecond differences don't split the same session
+    const dateKey = item.borrowDate ? item.borrowDate.slice(0, 10) : 'unknown'
+    if (!groups[dateKey]) {
+      groups[dateKey] = {
+        slipKey: dateKey,       // stable key independent of row order
+        borrowDate: item.borrowDate,
+        dueDate: item.dueDate,
+        items: [],
+        hasBorrowed: false,
+        hasOverdue: false,
+        totalFineAmount: 0
+      }
+    }
+    const group = groups[dateKey]
+    group.items.push(item)
+    group.totalFineAmount += Number(item.fineAmount || 0)
+    if (item.status === 'Borrowed') {
+      group.hasBorrowed = true
+      if (new Date(item.dueDate) < now) group.hasOverdue = true
+    }
+  })
+
+  return Object.values(groups).map(group => {
+    let status = 'Returned'
+    if (group.hasOverdue) status = 'Overdue'
+    else if (group.hasBorrowed) status = 'Borrowed'
+
+    return {
+      id: group.slipKey,        // stable ID for watcher find()
+      slipKey: group.slipKey,
+      borrowDate: group.borrowDate,
+      dueDate: group.dueDate,
+      items: group.items,
+      status,
+      totalFineAmount: group.totalFineAmount,
+      bookCount: group.items.length
+    }
+  })
+})
+
+const filteredSlips = computed(() => {
+  let slips = [...groupedSlips.value]
 
   if (keyword.value) {
     const search = keyword.value.toLowerCase()
-    data = data.filter(x =>
-      String(x.bookTitle || '').toLowerCase().includes(search)
+    slips = slips.filter(slip =>
+      shortId(slip.id).toLowerCase().includes(search) ||
+      slip.items.some(item => String(item.bookTitle || '').toLowerCase().includes(search))
     )
   }
 
   if (statusFilter.value) {
-    data = data.filter(x => x.status === statusFilter.value)
+    slips = slips.filter(slip => slip.status === statusFilter.value)
   }
 
-  return data
+  if (timeFilter.value) {
+    const now = new Date()
+    slips = slips.filter(slip => {
+      const borrowDate = new Date(slip.borrowDate)
+      if (timeFilter.value === 'thisMonth') {
+        return borrowDate.getMonth() === now.getMonth() && borrowDate.getFullYear() === now.getFullYear()
+      } else if (timeFilter.value === 'threeMonths') {
+        const diffTime = Math.abs(now - borrowDate)
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+        return diffDays <= 90
+      }
+      return true
+    })
+  }
+
+  return slips
 })
 
 const pageCount = computed(() => {
-  const total = Math.ceil(filteredBorrows.value.length / itemsPerPage.value)
+  const total = Math.ceil(filteredSlips.value.length / itemsPerPage.value)
   return total || 1
 })
 
-const paginatedBorrows = computed(() => {
+const paginatedSlips = computed(() => {
   const start = (page.value - 1) * itemsPerPage.value
   const end = start + itemsPerPage.value
-  return filteredBorrows.value.slice(start, end)
+  return filteredSlips.value.slice(start, end)
 })
 
-watch([keyword, statusFilter, itemsPerPage], () => {
+watch([keyword, statusFilter, timeFilter, itemsPerPage], () => {
   page.value = 1
+})
+
+// Sync detail modal contents if the borrows list reloads.
+// Use slipKey (stable date string) not item.id (order-dependent).
+watch(borrows, () => {
+  if (selectedSlip.value) {
+    const fresh = groupedSlips.value.find(s => s.slipKey === selectedSlip.value.slipKey)
+    if (fresh) {
+      selectedSlip.value = fresh
+    } else {
+      selectedSlip.value = null
+      detailDialog.value = false
+    }
+  }
 })
 
 async function loadMyBorrows() {
@@ -487,7 +619,13 @@ async function loadMyBorrows() {
 function resetFilters() {
   keyword.value = ''
   statusFilter.value = null
+  timeFilter.value = null
   page.value = 1
+}
+
+function openSlipDetail(slip) {
+  selectedSlip.value = slip
+  detailDialog.value = true
 }
 
 function openReturnDialog(item) {
@@ -540,24 +678,11 @@ function getLateDays(dueDate) {
   return diff > 0 ? Math.ceil(diff / (1000 * 60 * 60 * 24)) : 0
 }
 
+// Estimates fine per book
 function getEstimatedFine(item) {
   const currentFine = Number(item.fineAmount || 0)
   if (currentFine > 0) return currentFine
   return getLateDays(item.dueDate) * finePerLateDay
-}
-
-function getFineStatusText(item) {
-  const fine = Number(item.fineAmount || 0)
-  if (fine <= 0) return 'Không phát sinh'
-  if (item.isFinePaid) return 'Đã thanh toán'
-  return 'Chưa thanh toán'
-}
-
-function getFineStatusColor(item) {
-  const fine = Number(item.fineAmount || 0)
-  if (fine <= 0) return 'success'
-  if (item.isFinePaid) return 'success'
-  return 'error'
 }
 
 function formatDate(value) {
@@ -575,6 +700,7 @@ function formatMoney(value) {
   return new Intl.NumberFormat('vi-VN').format(value || 0) + ' đ'
 }
 
+// Truncates long ID to 8 chars
 function shortId(value) {
   if (!value) return '-'
   return String(value).slice(0, 8)
@@ -583,6 +709,27 @@ function shortId(value) {
 function toDateTimeLocal(date) {
   const pad = (n) => String(n).padStart(2, '0')
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`
+}
+
+function getSlipStatusText(status) {
+  if (status === 'Borrowed') return 'Đang mượn'
+  if (status === 'Returned') return 'Đã trả'
+  if (status === 'Overdue') return 'Quá hạn'
+  return status || '-'
+}
+
+function getSlipStatusColor(status) {
+  if (status === 'Borrowed') return 'warning'
+  if (status === 'Returned') return 'success'
+  if (status === 'Overdue') return 'error'
+  return 'secondary'
+}
+
+function getSlipStatusIcon(status) {
+  if (status === 'Borrowed') return 'mdi-book-clock'
+  if (status === 'Returned') return 'mdi-check-circle'
+  if (status === 'Overdue') return 'mdi-alert-circle'
+  return 'mdi-help-circle'
 }
 
 onMounted(loadMyBorrows)
@@ -594,28 +741,63 @@ onMounted(loadMyBorrows)
   letter-spacing: -0.02em;
 }
 
-.book-icon-wrap {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  display: grid;
-  place-items: center;
-  background: rgba(37, 99, 235, 0.08);
-  border: 1px solid rgba(37, 99, 235, 0.15);
-  flex-shrink: 0;
+.slip-list-wrapper {
+  animation: slipFadeIn 0.25s ease-out forwards;
 }
 
-.index-badge {
-  display: inline-flex;
-  width: 26px;
-  height: 26px;
-  border-radius: 8px;
-  align-items: center;
-  justify-content: center;
-  font-size: 11.5px;
-  font-weight: 800;
-  background: rgba(148, 163, 184, 0.1);
-  color: #64748b;
+@keyframes slipFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slip-card {
+  border-radius: 12px !important;
+  border: 1px solid rgba(239, 68, 68, 0.22) !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  cursor: pointer;
+  background: var(--card-bg, #ffffff) !important;
+}
+
+body:not(.dark-theme) .slip-card {
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.02) !important;
+}
+
+body:not(.dark-theme) .slip-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(239, 68, 68, 0.45) !important;
+  box-shadow: 0 8px 24px rgba(239, 68, 68, 0.08) !important;
+}
+
+body.dark-theme .slip-card {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.7) 100%) !important;
+  border-color: rgba(239, 68, 68, 0.3) !important;
+}
+
+body.dark-theme .slip-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(239, 68, 68, 0.55) !important;
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.15), 0 8px 24px rgba(0, 0, 0, 0.3) !important;
+}
+
+.scale-in-dialog {
+  animation: dialogScaleIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes dialogScaleIn {
+  0% {
+    transform: scale(0.92);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .info-box {
@@ -626,6 +808,11 @@ onMounted(loadMyBorrows)
   border: 1px solid #eef2f7;
 }
 
+body.dark-theme .info-box {
+  background: rgba(30, 41, 59, 0.5);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
 .info-label {
   color: #64748b;
   font-size: 13px;
@@ -633,10 +820,18 @@ onMounted(loadMyBorrows)
   margin-bottom: 6px;
 }
 
+body.dark-theme .info-label {
+  color: #94a3b8;
+}
+
 .info-value {
   color: #0f172a;
   font-size: 15px;
   font-weight: 800;
   word-break: break-word;
+}
+
+body.dark-theme .info-value {
+  color: #ffffff;
 }
 </style>
