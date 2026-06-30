@@ -605,12 +605,17 @@ function logout() {
 }
 
 function goSearch() {
+  const keywordVal = searchKeyword.value ? searchKeyword.value.trim() : ''
   if (auth.isLoggedIn) {
-    router.push('/app/books')
+    if (auth.role === 'Reader') {
+      router.push({ path: '/app/browse', query: { keyword: keywordVal } })
+    } else {
+      router.push({ path: '/app/books', query: { keyword: keywordVal } })
+    }
     return
   }
 
-  router.push('/login')
+  router.push({ path: '/catalog', query: { keyword: keywordVal } })
 }
 
 function handleScroll() {

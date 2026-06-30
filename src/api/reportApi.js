@@ -18,6 +18,14 @@ export const reportApi = {
   },
 
   borrowReturn(params) {
-    return api.get('/api/identity/reports/borrow-return', { params })
+    return api.get('/api/identity/report/borrowReturn', { params })
+  },
+
+  categoryStats(params) {
+    return api.get('/api/identity/report/categoryStats', { params })
+  },
+
+  fineRevenue(params) {
+    return api.get('/api/identity/report/fineRevenue', { params })
   }
 }

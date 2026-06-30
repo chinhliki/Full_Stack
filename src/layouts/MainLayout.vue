@@ -38,6 +38,7 @@
       <v-divider class="mx-4 mb-3" opacity="0.18" />
 
       <v-list nav density="comfortable">
+        <!-- ─── Admin + Librarian ─── -->
         <v-tooltip :disabled="!rail" location="right" text="Dashboard" v-if="isAdminOrLibrarian">
           <template #activator="{ props }">
             <v-list-item
@@ -49,46 +50,13 @@
           </template>
         </v-tooltip>
 
-        <v-tooltip :disabled="!rail" location="right" text="Quản lý sách">
+        <v-tooltip :disabled="!rail" location="right" text="Quản lý sách" v-if="isAdminOrLibrarian">
           <template #activator="{ props }">
             <v-list-item
               v-bind="props"
               title="Quản lý sách"
               prepend-icon="mdi-book-open-page-variant"
               to="/app/books"
-            />
-          </template>
-        </v-tooltip>
-
-        <v-tooltip :disabled="!rail" location="right" text="Phiếu mượn của tôi" v-if="isReader">
-          <template #activator="{ props }">
-            <v-list-item
-              v-bind="props"
-              title="Phiếu mượn của tôi"
-              prepend-icon="mdi-clipboard-text"
-              to="/app/my-borrows"
-            />
-          </template>
-        </v-tooltip>
-
-        <v-tooltip :disabled="!rail" location="right" text="Thẻ thư viện" v-if="isReader">
-          <template #activator="{ props }">
-            <v-list-item
-              v-bind="props"
-              title="Thẻ thư viện của tôi"
-              prepend-icon="mdi-card-account-details"
-              to="/app/my-card"
-            />
-          </template>
-        </v-tooltip>
-
-        <v-tooltip :disabled="!rail" location="right" text="Thành tích & XP" v-if="isReader">
-          <template #activator="{ props }">
-            <v-list-item
-              v-bind="props"
-              title="Thành tích của tôi"
-              prepend-icon="mdi-trophy-outline"
-              to="/app/gamification"
             />
           </template>
         </v-tooltip>
@@ -133,6 +101,119 @@
               title="Công nợ phí phạt"
               prepend-icon="mdi-cash-multiple"
               to="/app/fines"
+            />
+          </template>
+        </v-tooltip>
+
+        <!-- ─── Admin Only ─── -->
+        <v-tooltip :disabled="!rail" location="right" text="Quản lý tài khoản" v-if="isAdmin">
+          <template #activator="{ props }">
+            <v-list-item
+              v-bind="props"
+              title="Quản lý tài khoản"
+              prepend-icon="mdi-account-key"
+              to="/app/accounts"
+            />
+          </template>
+        </v-tooltip>
+
+        <v-tooltip :disabled="!rail" location="right" text="Báo cáo & thống kê" v-if="isAdmin">
+          <template #activator="{ props }">
+            <v-list-item
+              v-bind="props"
+              title="Báo cáo & thống kê"
+              prepend-icon="mdi-chart-bar"
+              to="/app/reports"
+            />
+          </template>
+        </v-tooltip>
+
+        <v-tooltip :disabled="!rail" location="right" text="Cấu hình hệ thống" v-if="isAdmin">
+          <template #activator="{ props }">
+            <v-list-item
+              v-bind="props"
+              title="Cấu hình hệ thống"
+              prepend-icon="mdi-cog"
+              to="/app/settings"
+            />
+          </template>
+        </v-tooltip>
+
+        <!-- ─── Reader Only ─── -->
+        <v-tooltip :disabled="!rail" location="right" text="Khám phá sách" v-if="isReader">
+          <template #activator="{ props }">
+            <v-list-item
+              v-bind="props"
+              title="Khám phá sách"
+              prepend-icon="mdi-compass-outline"
+              to="/app/browse"
+            />
+          </template>
+        </v-tooltip>
+
+        <v-tooltip :disabled="!rail" location="right" text="Phiếu mượn của tôi" v-if="isReader">
+          <template #activator="{ props }">
+            <v-list-item
+              v-bind="props"
+              title="Phiếu mượn của tôi"
+              prepend-icon="mdi-clipboard-text"
+              to="/app/my-borrows"
+            />
+          </template>
+        </v-tooltip>
+
+        <v-tooltip :disabled="!rail" location="right" text="Thẻ thư viện của tôi" v-if="isReader">
+          <template #activator="{ props }">
+            <v-list-item
+              v-bind="props"
+              title="Thẻ thư viện của tôi"
+              prepend-icon="mdi-card-account-details"
+              to="/app/my-card"
+            />
+          </template>
+        </v-tooltip>
+
+        <v-tooltip :disabled="!rail" location="right" text="Thành tích & XP" v-if="isReader">
+          <template #activator="{ props }">
+            <v-list-item
+              v-bind="props"
+              title="Thành tích của tôi"
+              prepend-icon="mdi-trophy-outline"
+              to="/app/gamification"
+            />
+          </template>
+        </v-tooltip>
+
+        <v-tooltip :disabled="!rail" location="right" text="Công nợ của tôi" v-if="isReader">
+          <template #activator="{ props }">
+            <v-list-item
+              v-bind="props"
+              title="Công nợ của tôi"
+              prepend-icon="mdi-cash-multiple"
+              to="/app/my-fines"
+            />
+          </template>
+        </v-tooltip>
+
+        <!-- ─── Shared ─── -->
+        <v-tooltip :disabled="!rail" location="right" text="Cài đặt cá nhân">
+          <template #activator="{ props }">
+            <v-list-item
+              v-bind="props"
+              title="Cài đặt cá nhân"
+              prepend-icon="mdi-account-cog"
+              to="/app/account-settings"
+            />
+          </template>
+        </v-tooltip>
+
+        <v-tooltip :disabled="!rail" location="right" text="Trợ giúp & Hỗ trợ">
+          <template #activator="{ props }">
+            <v-list-item
+              v-bind="props"
+              title="Trợ giúp & Hỗ trợ"
+              prepend-icon="mdi-help-circle"
+              to="/app/help"
             />
           </template>
         </v-tooltip>
@@ -306,6 +387,10 @@ function toggleTheme() {
 
 const isAdminOrLibrarian = computed(() =>
   ['Admin', 'Librarian'].includes(auth.role)
+)
+
+const isAdmin = computed(() =>
+  auth.role === 'Admin'
 )
 
 const isReader = computed(() =>

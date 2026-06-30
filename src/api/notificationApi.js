@@ -1,23 +1,23 @@
 import api from './axios'
 
 export const notificationApi = {
-  // GET /api/notifications?page=1&limit=30
+  // GET /api/identity/notifications?page=1&limit=30
   getAll(params = {}) {
-    return api.get('/api/notifications', { params: { limit: 30, ...params } })
+    return api.get('/api/identity/notifications', { params: { limit: 30, ...params } })
   },
 
-  // PATCH /api/notifications/{id}/read
+  // PATCH /api/identity/notifications/{id}/read
   markAsRead(id) {
-    return api.patch(`/api/notifications/${id}/read`)
+    return api.patch(`/api/identity/notifications/${id}/read`)
   },
 
-  // PATCH /api/notifications/read-all
+  // PATCH /api/identity/notifications/read-all
   markAllAsRead() {
-    return api.patch('/api/notifications/read-all')
+    return api.patch('/api/identity/notifications/read-all')
   },
 
-  // DELETE /api/notifications/{id}
+  // DELETE /api/identity/notifications/{id}
   remove(id) {
-    return api.delete(`/api/notifications/${id}`)
+    return api.delete(`/api/identity/notifications/${id}`)
   }
 }

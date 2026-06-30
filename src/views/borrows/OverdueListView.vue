@@ -449,7 +449,16 @@ const success = ref(true)
 const detailDialog = ref(false)
 const selectedOverdue = ref(null)
 
-const finePerLateDay = 5000
+const finePerLateDay = ref(5000)
+
+async function loadSettings() {
+  try {
+    const res = await borrowApi.getSettings()
+    finePerLateDay.value = Number(res.data.finePerLateDay || 5000)
+  } catch (err) {
+    console.warn('Không tải được cấu hình mượn trả, dùng mặc định 5000 đ/ngày:', err)
+  }
+}
 
 const lateLevelOptions = [
   { title: 'Quá hạn 1 - 7 ngày', value: '1-7' },
@@ -554,7 +563,8 @@ async function loadAllData() {
     await Promise.all([
       loadOverdue(),
       loadReaders(),
-      loadBooks()
+      loadBooks(),
+      loadSettings()
     ])
 
     success.value = true
@@ -613,7 +623,7 @@ function getEstimatedFine(item) {
 
   if (currentFine > 0) return currentFine
 
-  return getLateDays(item.dueDate) * finePerLateDay
+  return getLateDays(item.dueDate) * finePerLateDay.value
 }
 
 function getReaderCode(item) {

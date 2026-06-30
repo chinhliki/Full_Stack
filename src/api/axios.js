@@ -18,10 +18,15 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    const isAuthEndpoint = error.config?.url?.includes('/auth/login') ||
+      error.config?.url?.includes('/auth/register')
+
+    if (error.response?.status === 401 && !isAuthEndpoint) {
       localStorage.removeItem('accessToken')
       localStorage.removeItem('user')
-      window.location.href = '/login'
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login'
+      }
     }
 
     // Gắn thông báo timeout vào error object để component hiển thị đúng

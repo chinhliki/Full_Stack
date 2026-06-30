@@ -41,94 +41,96 @@
 
     <v-row v-if="card">
       <v-col cols="12" lg="5">
-        <v-card class="library-card-premium pa-6">
-          <div class="d-flex align-center justify-space-between mb-8">
-            <div>
-              <div class="text-caption text-white opacity-80 card-title-glow">
-                DIGITAL LIBRARY CARD
+        <v-card class="library-card-premium pa-6 d-flex flex-column justify-space-between">
+          <div>
+            <div class="d-flex align-center justify-space-between mb-6">
+              <div>
+                <div class="text-caption text-white opacity-80 card-title-glow">
+                  DIGITAL LIBRARY CARD
+                </div>
+                <div class="text-h5 font-weight-black text-white mt-1">
+                  Library System
+                </div>
               </div>
-              <div class="text-h5 font-weight-black text-white mt-1">
-                Library System
-              </div>
+
+              <v-avatar color="white" size="52" class="card-icon-glow">
+                <v-icon icon="mdi-library" color="primary" size="30" />
+              </v-avatar>
             </div>
 
-            <v-avatar color="white" size="52" class="card-icon-glow">
-              <v-icon icon="mdi-library" color="primary" size="30" />
-            </v-avatar>
+            <div class="text-caption text-white opacity-80 card-title-glow">
+              SỐ THẺ THƯ VIỆN
+            </div>
+
+            <div class="card-number-glow mt-2">
+              {{ card.cardNumber }}
+            </div>
           </div>
 
-          <div class="text-caption text-white opacity-80 card-title-glow">
-            SỐ THẺ THƯ VIỆN
-          </div>
-
-          <div class="card-number-glow mt-2">
-            {{ card.cardNumber }}
-          </div>
-
-          <v-row class="mt-7">
-            <v-col cols="7">
-              <div class="text-caption text-white opacity-80 card-title-glow">
-                CHỦ THẺ
+          <v-row class="mt-6 align-end">
+            <!-- Left side: Account info -->
+            <v-col cols="12" sm="8" class="d-flex flex-column ga-4">
+              <div>
+                <div class="text-caption text-white opacity-80 card-title-glow">
+                  CHỦ THẺ
+                </div>
+                <div class="text-white font-weight-bold mt-1 text-subtitle-1">
+                  {{ card.fullName }}
+                </div>
               </div>
-              <div class="text-white font-weight-bold mt-1">
-                {{ card.fullName }}
-              </div>
+
+              <v-row dense>
+                <v-col cols="4">
+                  <div class="text-caption text-white opacity-80 card-title-glow">
+                    TRẠNG THÁI
+                  </div>
+                  <v-chip
+                    class="mt-1"
+                    :color="card.status === 'Active' ? 'success' : 'error'"
+                    size="small"
+                    variant="flat"
+                  >
+                    {{ getCardStatusText(card.status) }}
+                  </v-chip>
+                </v-col>
+
+                <v-col cols="4">
+                  <div class="text-caption text-white opacity-80 card-title-glow">
+                    NGÀY CẤP
+                  </div>
+                  <div class="text-white font-weight-bold mt-1 text-caption">
+                    {{ formatShortDate(card.issuedDate) }}
+                  </div>
+                </v-col>
+
+                <v-col cols="4">
+                  <div class="text-caption text-white opacity-80 card-title-glow">
+                    HẾT HẠN
+                  </div>
+                  <div class="text-white font-weight-bold mt-1 text-caption">
+                    {{ formatShortDate(card.expiredDate) }}
+                  </div>
+                </v-col>
+              </v-row>
             </v-col>
 
-            <v-col cols="5">
-              <div class="text-caption text-white opacity-80 card-title-glow">
-                TRẠNG THÁI
-              </div>
-              <v-chip
-                class="mt-1"
-                :color="card.status === 'Active' ? 'success' : 'error'"
-                size="small"
-                variant="flat"
-              >
-                {{ getCardStatusText(card.status) }}
-              </v-chip>
-            </v-col>
-          </v-row>
-
-          <v-row class="mt-4">
-            <v-col cols="6">
-              <div class="text-caption text-white opacity-80 card-title-glow">
-                NGÀY CẤP
-              </div>
-              <div class="text-white font-weight-bold mt-1">
-                {{ formatShortDate(card.issuedDate) }}
-              </div>
-            </v-col>
-
-            <v-col cols="6">
-              <div class="text-caption text-white opacity-80 card-title-glow">
-                HẾT HẠN
-              </div>
-              <div class="text-white font-weight-bold mt-1">
-                {{ formatShortDate(card.expiredDate) }}
+            <!-- Right side: QR Code -->
+            <v-col cols="12" sm="4" class="d-flex justify-start justify-sm-end">
+              <div class="qr-card-corner bg-white pa-2 rounded-lg d-flex flex-column align-center shadow-sm">
+                <qrcode-vue
+                  :value="card.cardNumber"
+                  :size="84"
+                  level="M"
+                  render-as="svg"
+                />
+                <span class="text-grey-darken-4 font-weight-black mt-1" style="font-size: 10px; line-height: 1;">
+                  QR Thẻ thư viện
+                </span>
               </div>
             </v-col>
           </v-row>
         </v-card>
 
-        <!-- QR Code card -->
-        <v-card v-if="card?.cardNumber" class="soft-card pa-5 mt-5 text-center">
-          <div class="d-flex align-center justify-center mb-3">
-            <v-icon icon="mdi-qrcode" size="20" class="mr-2 text-secondary" />
-            <span class="text-subtitle-2 font-weight-bold text-secondary">Mã QR thẻ thư viện</span>
-          </div>
-          <div class="d-flex justify-center mb-3">
-            <div class="qr-frame pa-3">
-              <qrcode-vue
-                :value="card.cardNumber"
-                :size="160"
-                level="M"
-                render-as="svg"
-              />
-            </div>
-          </div>
-          <div class="text-caption text-grey">Xuất trình mã QR khi mượn / trả sách tại quầy thủ thư</div>
-        </v-card>
 
         <v-card class="soft-card pa-5 mt-5">
           <div class="d-flex align-center justify-space-between">

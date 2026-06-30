@@ -2,61 +2,115 @@
 
 Catalog Service (Nhóm 1) chịu trách nhiệm quản lý danh mục sách, kho hàng và cung cấp thông tin metadata cho toàn bộ hệ thống thư viện theo kiến trúc Microservices.
 
+---
+
 ## 📁 Cấu trúc thư mục
 
 ```
 CatalogService/
-├── Controllers/            # Chứa các API Endpoints
-│   ├── BooksController.cs         # API công khai: CRUD, Tìm kiếm, Import Excel
-│   └── InternalBooksController.cs  # API nội bộ: Kiểm tra kho, Tăng/Giảm tồn kho
-├── Data/                   # Cấu hình Database
-│   ├── CatalogDbContext.cs        # Entity Framework Context
-│   └── DataSeeder.cs              # Dữ liệu mẫu ban đầu
-├── DTOs/                   # Data Transfer Objects (Đối tượng truyền tải dữ liệu)
-│   ├── BookDto.cs                 # Kết quả trả về cho client
-│   ├── CreateBookDto.cs           # Dữ liệu tạo sách mới
-│   ├── BookImportDto.cs           # Cấu trúc file Excel để Import
-│   └── ...
-├── Models/                 # Định nghĩa các thực thể (Entities)
-│   └── Book.cs                    # Thông tin chi tiết một cuốn sách
-├── Services/               # Các dịch vụ bổ trợ
-│   ├── IEventBus.cs               # Giao diện phát sự kiện
-│   └── ConsoleEventBus.cs         # Implementation log sự kiện ra Console
-├── Properties/             # Cấu hình môi trường chạy (launchSettings.json)
-├── Dockerfile              # Cấu hình đóng gói Container
-├── appsettings.json        # Cấu hình hệ thống (DB, JWT, Secret Keys)
-└── Program.cs              # Điểm khởi đầu của ứng dụng, đăng ký Services
+├── Controllers/
+│   ├── BooksController.cs           # Public API: CRUD, Tìm kiếm, Import Excel, Category Map
+│   └── InternalBooksController.cs   # Internal API (server-to-server): Kiểm tra/Tăng/Giảm kho
+├── Data/
+│   ├── CatalogDbContext.cs          # Entity Framework Core DbContext
+│   └── DataSeeder.cs               # Dữ liệu mẫu khởi tạo ban đầu
+├── DTOs/
+│   ├── BookDto.cs                  # Response: Thông tin sách trả về client
+│   ├── CreateBookDto.cs            # Request: Tạo sách mới (có Validation)
+│   ├── UpdateBookDto.cs            # Request: Cập nhật sách (có Validation)
+│   ├── BookImportDto.cs            # Import Excel: Ánh xạ cột tiếng Việt
+│   └── InternalBookAvailabilityDto.cs # Internal: Thông tin tình trạng kho
+├── Migrations/                     # EF Core Migrations (tự động tạo)
+├── Models/
+│   └── Book.cs                    # Entity: Định nghĩa bảng Books trong DB
+├── Services/
+│   ├── IEventBus.cs               # Interface phát sự kiện
+│   └── ConsoleEventBus.cs         # Implementation: Log sự kiện ra Console
+├── Dockerfile                     # Cấu hình Docker
+├── appsettings.json               # Cấu hình (DB, JWT, Internal Key)
+└── Program.cs                     # Entry point, đăng ký DI, middleware
 ```
 
-## ⚙️ Cơ chế hoạt động chính
+---
 
-### 1. Quản lý kho hàng (Inventory)
-*   Duy trì số lượng sách sẵn có (`AvailableCopies`) và tổng số lượng (`TotalCopies`).
-*   Cung cấp API nội bộ cho **Circulation Service (Nhóm 2)** để trừ kho khi mượn sách và hoàn kho khi trả sách.
-*   Mọi thay đổi về kho đều phát đi sự kiện `book.availability.changed` qua Event Bus.
+## 🌐 Danh sách API
 
-### 2. Bảo mật & Giao tiếp
-*   **Public API**: Sử dụng **JWT Authentication** (phối hợp với Identity Service - Nhóm 3). Các thao tác thêm/xóa/sửa yêu cầu role `Admin`.
-*   **Internal API**: Sử dụng **Header Security** (`X-Internal-Service-Key`). Điều này cho phép các service gọi nhau trực tiếp mà không cần qua luồng đăng nhập của người dùng.
+### Public API (`/api/catalog/books`)
 
-### 3. Nhập dữ liệu hàng loạt (Bulk Import)
-*   Tích hợp thư viện **MiniExcel** để đọc file `.xlsx`.
-*   Tự động ánh xạ các cột trong Excel vào Database, giúp thủ thư thêm hàng nghìn cuốn sách chỉ trong vài giây.
+| Method | Endpoint | Phân quyền | Mô tả |
+|--------|----------|------------|-------|
+| `GET` | `/api/catalog/books` | Tất cả | Lấy danh sách sách (phân trang, tìm kiếm, lọc, sắp xếp) |
+| `GET` | `/api/catalog/books/{id}` | Tất cả | Lấy chi tiết một cuốn sách |
+| `GET` | `/api/catalog/books/category-map` | Tất cả | Lấy danh sách thể loại sách |
+| `POST` | `/api/catalog/books` | Admin, Librarian | Thêm sách mới |
+| `PUT` | `/api/catalog/books/{id}` | Admin, Librarian | Cập nhật thông tin sách |
+| `DELETE` | `/api/catalog/books/{id}` | Admin | Xóa mềm sách |
+| `POST` | `/api/catalog/books/import` | Admin, Librarian | Nhập hàng loạt từ Excel |
 
-### 4. Hỗ trợ Báo cáo & Thống kê
-*   Cung cấp API ánh xạ thể loại (`category-map`) để **Report Service (Nhóm 3)** có thể tổng hợp số liệu mượn trả theo từng chuyên mục sách.
+### Internal API (`/api/internal/books`)
+> Yêu cầu header: `X-Internal-Service-Key: LibraryInternalServiceKey2026`
 
-## 🚀 Hướng dẫn khởi chạy
+| Method | Endpoint | Mô tả |
+|--------|----------|-------|
+| `GET` | `/api/internal/books/{id}/availability` | Kiểm tra số lượng tồn kho |
+| `PUT` | `/api/internal/books/{id}/decrease` | Giảm kho (khi cho mượn) |
+| `PUT` | `/api/internal/books/{id}/increase` | Tăng kho (khi trả sách) |
+| `GET` | `/api/internal/books/category-map` | Lấy Map {BookId -> Category} để báo cáo |
 
-1.  **Cấu hình Database**: Đảm bảo chuỗi kết nối trong `appsettings.json` trỏ đúng về SQL Server của bạn.
-2.  **Khởi chạy**: 
-    ```bash
-    dotnet run
-    ```
-3.  **Truy cập Swagger**: Mở trình duyệt tại `http://localhost:5234/swagger` để xem tài liệu API và test trực tiếp.
+---
 
-## 🐳 Docker Deployment
-Service đã sẵn sàng để chạy trong môi trường Container:
+## 🔍 Query Parameters (`GET /api/catalog/books`)
+
+| Tham số | Kiểu | Mặc định | Mô tả |
+|---------|------|----------|-------|
+| `page` | int | `1` | Trang hiện tại |
+| `pageSize` | int | `10` | Số dòng mỗi trang |
+| `keyword` | string | — | Tìm theo tên sách, tác giả, ISBN |
+| `category` | string | — | Lọc theo thể loại |
+| `sortBy` | string | — | `title`, `publishedyear`, `createddate` |
+| `sortOrder` | string | `asc` | `asc` hoặc `desc` |
+
+> **Pagination Headers:** Server trả về `X-Total-Count`, `X-Total-Pages`, `X-Current-Page` trong Response Headers.
+
+---
+
+## 📤 Cấu trúc cột file Excel Import
+
+| Tên cột trong file | Bắt buộc | Ghi chú |
+|--------------------|----------|---------|
+| `ISBN` | ✅ | Ví dụ: `978-604-0-12345-6` |
+| `Tên Sách` | ✅ | |
+| `Tác Giả` | ✅ | |
+| `Nhà Xuất Bản` | ❌ | |
+| `Năm Xuất Bản` | ❌ | Số nguyên, ≤ năm hiện tại |
+| `Thể Loại` | ✅ | |
+| `Mô Tả` | ❌ | |
+| `Ảnh Bìa` | ❌ | URL đường dẫn ảnh |
+| `Tổng Số Bản` | ✅ | Phải ≥ 1 |
+| `Vị Trí Kệ` | ❌ | Ví dụ: `Kệ A3, Tầng 2` |
+
+---
+
+## ⚙️ Cách hoạt động
+
+1. **Quản lý kho**: Truy vấn kho bằng `AvailableCopies`. Internal API cập nhật kho khi sách được mượn/trả và tự động phát sự kiện `book.availability.changed`.
+2. **Bảo mật**: Public API dùng **JWT Bearer Token**. Internal API dùng header `X-Internal-Service-Key`.
+3. **Event Bus**: Mỗi thay đổi kho phát sự kiện (hiện log Console, dễ thay thế bằng RabbitMQ/Redis).
+
+---
+
+## 🚀 Khởi chạy
+
+```bash
+# Chạy thông thường
+dotnet run
+
+# Truy cập Swagger
+http://localhost:5234/swagger
+```
+
+## 🐳 Docker
+
 ```bash
 docker build -t catalog-service .
 docker run -p 5234:5234 catalog-service

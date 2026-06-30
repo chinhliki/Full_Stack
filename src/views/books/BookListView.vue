@@ -49,6 +49,29 @@
       >
         Thêm sách
       </v-btn>
+
+      <v-btn
+        v-if="canManageBook"
+        color="success"
+        variant="tonal"
+        prepend-icon="mdi-file-excel"
+        class="ml-2"
+        @click="openImportDialog"
+      >
+        Nhập từ Excel
+      </v-btn>
+
+      <v-btn
+        v-if="canManageBook"
+        color="info"
+        variant="tonal"
+        prepend-icon="mdi-file-download-outline"
+        class="ml-2"
+        :disabled="!books.length"
+        @click="exportBooksCsv"
+      >
+        Xuất Excel (CSV)
+      </v-btn>
     </div>
 
     <v-alert
@@ -785,11 +808,70 @@
         </v-card-text>
       </v-card>
     </v-dialog>
+
+    <!-- Dialog nhập sách từ file Excel -->
+    <v-dialog v-model="importDialog" max-width="500">
+      <v-card rounded="xl" class="scale-in-dialog">
+        <v-card-title class="d-flex align-center pa-4">
+          <v-icon icon="mdi-file-excel" color="success" class="mr-2" />
+          <span class="font-weight-black text-secondary text-subtitle-1">Nhập danh sách sách từ Excel</span>
+          <v-spacer />
+          <v-btn icon="mdi-close" variant="text" @click="importDialog = false" />
+        </v-card-title>
+        <v-divider />
+        <v-card-text class="pa-5">
+          <div class="text-caption text-grey mb-4">
+            Vui lòng chọn file Excel (.xlsx hoặc .xls) có cấu trúc các cột tương thích với cấu trúc của thư viện (ví dụ: ISBN, Tên Sách, Tác Giả, Thể Loại, Tổng Số Bản...).
+          </div>
+          
+          <v-file-input
+            v-model="excelFile"
+            label="Chọn tệp Excel"
+            accept=".xlsx, .xls"
+            prepend-icon="mdi-file-excel-box"
+            outlined
+            density="comfortable"
+            show-size
+            :rules="[v => !!v || 'Vui lòng chọn một tệp']"
+          />
+
+          <v-alert
+            v-if="importMessage"
+            :type="importSuccess ? 'success' : 'error'"
+            variant="tonal"
+            rounded="lg"
+            class="mt-3"
+            density="compact"
+          >
+            {{ importMessage }}
+          </v-alert>
+        </v-card-text>
+        <v-divider />
+        <v-card-actions class="pa-4">
+          <v-spacer />
+          <v-btn variant="tonal" color="secondary" @click="importDialog = false" rounded="xl">
+            Hủy
+          </v-btn>
+          <v-btn
+            color="success"
+            variant="flat"
+            rounded="xl"
+            class="px-5 font-weight-bold"
+            :loading="importing"
+            :disabled="!excelFile"
+            @click="handleImportExcel"
+          >
+            Nhập sách
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import { bookApi } from '../../api/bookApi'
 import { borrowApi } from '../../api/borrowApi'
 import { useAuthStore } from '../../stores/authStore'
@@ -799,6 +881,7 @@ import BookActionBtn from '../../components/BookActionBtn.vue'
 
 const auth = useAuthStore()
 const cart = useCartStore()
+const router = useRouter()
 const cartDrawerRef = ref(null)
 
 const books = ref([])
@@ -821,6 +904,12 @@ const loading = ref(false)
 const saving = ref(false)
 const isEditMode = ref(false)
 const selectedBookId = ref(null)
+
+const importDialog = ref(false)
+const excelFile = ref(null)
+const importing = ref(false)
+const importMessage = ref('')
+const importSuccess = ref(true)
 
 const message = ref('')
 const success = ref(true)
@@ -1115,6 +1204,74 @@ function openEditDialog(book) {
 function openDetailDialog(book) {
   selectedBook.value = book
   detailDialog.value = true
+}
+
+function openImportDialog() {
+  router.push('/app/books/import')
+}
+
+function exportBooksCsv() {
+  if (!books.value.length) return
+
+  const headers = [
+    { key: 'isbn', label: 'ISBN' },
+    { key: 'title', label: 'Tên Sách' },
+    { key: 'author', label: 'Tác Giả' },
+    { key: 'publisher', label: 'Nhà Xuất Bản' },
+    { key: 'publishingYear', label: 'Năm Xuất Bản' },
+    { key: 'category', label: 'Thể Loại' },
+    { key: 'copies', label: 'Tổng Số Bản' },
+    { key: 'availableCopies', label: 'Số Bản Sẵn Có' },
+    { key: 'location', label: 'Vị Trí Kệ' },
+    { key: 'description', label: 'Mô Tả' },
+    { key: 'coverImageUrl', label: 'Ảnh Bìa' }
+  ]
+
+  const headerRow = headers.map(h => `"${h.label}"`).join(',')
+  const bodyRows = books.value.map(row => 
+    headers.map(h => {
+      const val = row[h.key] === null || row[h.key] === undefined ? '' : row[h.key]
+      return `"${String(val).replace(/"/g, '""')}"`
+    }).join(',')
+  ).join('\n')
+
+  const csv = `${headerRow}\n${bodyRows}`
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' })
+  const url = URL.createObjectURL(blob)
+
+  const link = document.createElement('a')
+  link.href = url
+  link.download = 'bao-cao-kho-sach.csv'
+  link.click()
+  URL.revokeObjectURL(url)
+}
+
+async function handleImportExcel() {
+  if (!excelFile.value) return
+  
+  importing.value = true
+  importMessage.value = ''
+  
+  const formData = new FormData()
+  const fileToUpload = Array.isArray(excelFile.value) ? excelFile.value[0] : excelFile.value
+  formData.append('file', fileToUpload)
+  
+  try {
+    const res = await bookApi.importExcel(formData)
+    importSuccess.value = true
+    importMessage.value = res.data.message || 'Nhập sách từ file Excel thành công!'
+    excelFile.value = null
+    await loadBooks()
+    setTimeout(() => {
+      importDialog.value = false
+    }, 2000)
+  } catch (err) {
+    importSuccess.value = false
+    importMessage.value = err.response?.data?.message || 'Có lỗi xảy ra khi nhập tệp Excel.'
+    console.error(err)
+  } finally {
+    importing.value = false
+  }
 }
 
 function validateForm() {

@@ -143,7 +143,7 @@
         <v-card class="chart-card pa-5 h-100" rounded="xl">
           <div class="d-flex align-center mb-4">
             <v-icon icon="mdi-chart-donut" color="purple" class="mr-2" />
-            <span class="chart-title font-weight-black text-secondary">Top sách phổ biến</span>
+            <span class="chart-title font-weight-black text-secondary">Tỷ lệ mượn theo thể loại sách</span>
           </div>
           <div v-if="chartLoading" class="chart-skeleton" />
           <BookCategoryDonutChart
@@ -172,7 +172,7 @@
               hide-details
               rounded="lg"
               style="max-width: 110px"
-              @update:model-value="buildFineBarFromFines"
+              @update:model-value="loadFineRevenueChart"
             />
           </div>
           <div v-if="chartLoading" class="chart-skeleton" />
@@ -336,12 +336,22 @@ const dashboard = ref({
 
 const fines = ref([])
 const overdueBorrows = ref([])
-const finePerLateDay = 5000
+const finePerLateDay = ref(5000)
 const loadError = ref('')
+
+async function loadSettings() {
+  try {
+    const res = await borrowApi.getSettings()
+    finePerLateDay.value = Number(res.data.finePerLateDay || 5000)
+  } catch (err) {
+    console.warn('Không tải được cấu hình mượn trả, dùng mặc định 5000 đ/ngày:', err)
+  }
+}
 
 async function loadDashboard() {
   loading.value = true
   loadError.value = ''
+  loadSettings()
   const [dashResult, finesResult] = await Promise.allSettled([
     reportApi.dashboard(),
     loadFinesAndOverdue()
@@ -405,7 +415,7 @@ const finedReaders = computed(() => {
       if (lateDays > 0) {
         const estimatedFine = Number(item.fineAmount || 0) > 0
           ? Number(item.fineAmount)
-          : lateDays * finePerLateDay
+          : lateDays * finePerLateDay.value
 
         const key = `${item.readerId || item.readerName}_Overdue`
         if (!map[key]) {
@@ -442,15 +452,21 @@ async function loadBorrowReturnChart() {
   }
 }
 
-function buildDonutFromTopBooks(topBooks) {
-  if (!Array.isArray(topBooks) || topBooks.length === 0) {
+async function loadCategoryStatsChart() {
+  try {
+    const res = await reportApi.categoryStats({ year: lineChartYear.value })
+    const rows = Array.isArray(res.data) ? res.data : (res.data?.items ?? [])
+    if (rows.length === 0) {
+      donutChart.value = { labels: ['Chưa phân loại'], data: [0] }
+    } else {
+      donutChart.value = {
+        labels: rows.map(r => r.category ?? 'Chưa phân loại'),
+        data: rows.map(r => r.borrowCount ?? 0)
+      }
+    }
+  } catch (err) {
+    console.error('Không tải được thống kê thể loại:', err)
     donutChart.value = { labels: [], data: [] }
-    return
-  }
-  const slice = topBooks.slice(0, 7)
-  donutChart.value = {
-    labels: slice.map(b => b.bookTitle ?? b.title ?? 'Không rõ'),
-    data: slice.map(b => b.borrowCount ?? b.count ?? 0)
   }
 }
 
@@ -469,11 +485,35 @@ function buildFineBarFromFines() {
   barChart.value = { labels: MONTH_LABELS, data: arr }
 }
 
+async function loadFineRevenueChart() {
+  try {
+    const res = await reportApi.fineRevenue({ year: barChartYear.value })
+    const rows = Array.isArray(res.data) ? res.data : (res.data?.items ?? [])
+    if (rows.length === 0) {
+      buildFineBarFromFines()
+    } else {
+      const arr = Array(12).fill(0)
+      rows.forEach(r => {
+        const m = (r.month ? parseInt(r.month.split('-')[1]) : r.Month ?? 1) - 1
+        if (m >= 0 && m < 12) {
+          arr[m] = Number(r.totalFine ?? r.TotalFine ?? 0)
+        }
+      })
+      barChart.value = { labels: MONTH_LABELS, data: arr }
+    }
+  } catch (err) {
+    console.error('Không tải được doanh thu tiền phạt từ API, dùng dữ liệu tính toán tại chỗ:', err)
+    buildFineBarFromFines()
+  }
+}
+
 async function loadCharts(topBooks) {
   chartLoading.value = true
-  await loadBorrowReturnChart()
-  buildDonutFromTopBooks(topBooks)
-  buildFineBarFromFines()
+  await Promise.allSettled([
+    loadBorrowReturnChart(),
+    loadCategoryStatsChart(),
+    loadFineRevenueChart()
+  ])
   chartLoading.value = false
 }
 

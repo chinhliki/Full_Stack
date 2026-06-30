@@ -326,6 +326,27 @@
                 prepend-inner-icon="mdi-cash"
               />
             </v-col>
+
+            <v-col cols="12" v-if="paymentMethod !== 'Tiền mặt'">
+              <div v-if="qrLoading" class="d-flex flex-column align-center py-4">
+                <v-progress-circular indeterminate color="primary" size="32" class="mb-2" />
+                <div class="text-caption text-grey">Đang tạo mã QR thanh toán...</div>
+              </div>
+              <div v-else-if="qrData" class="text-center border pa-4 rounded-lg bg-grey-lighten-5">
+                <div class="text-caption font-weight-bold text-grey mb-3">Độc giả quét mã QR bên dưới để thanh toán</div>
+                <v-img :src="qrData.qrImageUrl" max-width="200" class="mx-auto rounded-lg border mb-3 shadow-sm" />
+                <div class="info-box text-left mb-2 pa-2 bg-grey-lighten-4 rounded-lg">
+                  <div class="text-caption"><span class="font-weight-bold">Ngân hàng:</span> {{ qrData.bankName }}</div>
+                  <div class="text-caption"><span class="font-weight-bold">Số tài khoản:</span> {{ qrData.accountNo }}</div>
+                  <div class="text-caption"><span class="font-weight-bold">Chủ tài khoản:</span> {{ qrData.accountName }}</div>
+                </div>
+                <div class="text-caption font-weight-bold">Nội dung chuyển khoản:</div>
+                <div class="text-body-2 font-weight-black text-primary select-all">{{ qrData.paymentContent }}</div>
+              </div>
+              <v-alert v-else type="error" variant="tonal" density="compact" rounded="lg">
+                Không thể tải mã QR thanh toán.
+              </v-alert>
+            </v-col>
           </v-row>
         </v-card-text>
 
@@ -372,6 +393,26 @@ const selectedFine = ref(null)
 const paymentMethod = ref('Tiền mặt')
 
 const paymentMethods = ['Tiền mặt', 'Chuyển khoản', 'Ví điện tử']
+
+const qrLoading = ref(false)
+const qrData = ref(null)
+
+watch(paymentMethod, async (newVal) => {
+  if (newVal !== 'Tiền mặt' && selectedFine.value) {
+    qrLoading.value = true
+    try {
+      const res = await borrowApi.getFinePaymentQr(selectedFine.value.id)
+      qrData.value = res.data
+    } catch (err) {
+      console.error('Không tải được QR thanh toán:', err)
+      qrData.value = null
+    } finally {
+      qrLoading.value = false
+    }
+  } else {
+    qrData.value = null
+  }
+})
 
 const sortOptions = [
   { title: 'Cao nhất trước', value: 'desc' },
@@ -448,6 +489,7 @@ function resetFilters() {
 function openPayDialog(item) {
   selectedFine.value = item
   paymentMethod.value = 'Tiền mặt'
+  qrData.value = null
   payDialog.value = true
 }
 

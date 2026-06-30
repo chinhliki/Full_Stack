@@ -318,9 +318,24 @@
                   </v-chip>
                 </td>
                 <td>
-                  <span :class="Number(item.fineAmount || 0) > 0 ? 'text-error font-weight-bold' : 'text-success'">
-                    {{ formatMoney(item.fineAmount) }}
-                  </span>
+                  <div class="d-flex align-center">
+                    <span :class="Number(item.fineAmount || 0) > 0 ? 'text-error font-weight-bold' : 'text-success'">
+                      {{ formatMoney(item.fineAmount) }}
+                    </span>
+                    <v-tooltip text="Quét mã QR thanh toán" location="top" v-if="Number(item.fineAmount || 0) > 0 && !item.isFinePaid">
+                      <template #activator="{ props }">
+                        <v-btn
+                          v-bind="props"
+                          icon="mdi-qrcode"
+                          size="x-small"
+                          color="warning"
+                          variant="tonal"
+                          class="ml-2"
+                          @click="showPaymentQr(item)"
+                        />
+                      </template>
+                    </v-tooltip>
+                  </div>
                 </td>
                 <td class="text-center">
                   <v-btn
@@ -352,6 +367,62 @@
           <v-spacer />
           <v-btn variant="tonal" color="secondary" @click="detailDialog = false">
             Đóng
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- Dialog mã QR thanh toán phí phạt VietQR -->
+    <v-dialog v-model="qrDialog" max-width="420">
+      <v-card rounded="xl" class="scale-in-dialog">
+        <v-card-title class="d-flex align-center pa-4">
+          <v-icon icon="mdi-qrcode" color="warning" class="mr-2" />
+          <span class="font-weight-black text-secondary text-subtitle-1">Mã QR Thanh Toán Phí Phạt</span>
+          <v-spacer />
+          <v-btn icon="mdi-close" variant="text" @click="qrDialog = false" />
+        </v-card-title>
+        <v-divider />
+        <v-card-text class="text-center pa-5">
+          <div v-if="qrLoading" class="d-flex flex-column align-center py-6">
+            <v-progress-circular indeterminate color="primary" size="40" class="mb-3" />
+            <div class="text-caption text-grey">Đang tạo mã QR thanh toán VietQR...</div>
+          </div>
+          <div v-else-if="qrData">
+            <div class="text-caption text-grey mb-3">Quét mã bằng ứng dụng Ngân hàng (VietQR) để thanh toán trực tuyến</div>
+            <v-img :src="qrData.qrImageUrl" max-width="240" class="mx-auto rounded-lg border mb-4 shadow-sm" />
+            
+            <div class="info-box text-left mb-3 pa-3 bg-grey-lighten-4 rounded-lg">
+              <div class="d-flex justify-space-between mb-1">
+                <span class="text-caption text-grey">Ngân hàng:</span>
+                <span class="text-body-2 font-weight-bold text-secondary">{{ qrData.bankName }}</span>
+              </div>
+              <div class="d-flex justify-space-between mb-1">
+                <span class="text-caption text-grey">Số tài khoản:</span>
+                <span class="text-body-2 font-weight-bold text-secondary">{{ qrData.accountNo }}</span>
+              </div>
+              <div class="d-flex justify-space-between mb-1">
+                <span class="text-caption text-grey">Chủ tài khoản:</span>
+                <span class="text-body-2 font-weight-bold text-secondary">{{ qrData.accountName }}</span>
+              </div>
+              <div class="d-flex justify-space-between mb-1">
+                <span class="text-caption text-grey">Số tiền phạt:</span>
+                <span class="text-body-2 font-weight-black text-error">{{ formatMoney(qrData.fineAmount) }}</span>
+              </div>
+            </div>
+            <v-alert type="info" variant="tonal" rounded="lg" class="text-left" density="compact">
+              <div class="text-caption font-weight-bold">Nội dung chuyển khoản:</div>
+              <div class="text-body-2 font-weight-black text-primary select-all">{{ qrData.paymentContent }}</div>
+            </v-alert>
+          </div>
+          <v-alert v-else type="error" variant="tonal" rounded="lg">
+            Không thể tải mã QR thanh toán từ hệ thống.
+          </v-alert>
+        </v-card-text>
+        <v-divider />
+        <v-card-actions class="pa-4">
+          <v-spacer />
+          <v-btn color="primary" variant="flat" rounded="xl" class="px-5 font-weight-bold" @click="qrDialog = false">
+            Tôi đã chuyển khoản xong
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -462,7 +533,16 @@ const selectedBorrow = ref(null)
 const returningId = ref('')
 const returnDate = ref('')
 
-const finePerLateDay = 5000
+const finePerLateDay = ref(5000)
+
+async function loadSettings() {
+  try {
+    const res = await borrowApi.getSettings()
+    finePerLateDay.value = Number(res.data.finePerLateDay || 5000)
+  } catch (err) {
+    console.warn('Không tải được cấu hình mượn trả, dùng mặc định 5000 đ/ngày:', err?.response?.status || err.message)
+  }
+}
 
 const statusOptions = [
   { title: 'Tất cả trạng thái', value: null },
@@ -603,6 +683,8 @@ async function loadMyBorrows() {
   loading.value = true
   message.value = ''
 
+  loadSettings()
+
   try {
     const res = await borrowApi.getMyBorrows()
     borrows.value = res.data
@@ -682,7 +764,7 @@ function getLateDays(dueDate) {
 function getEstimatedFine(item) {
   const currentFine = Number(item.fineAmount || 0)
   if (currentFine > 0) return currentFine
-  return getLateDays(item.dueDate) * finePerLateDay
+  return getLateDays(item.dueDate) * finePerLateDay.value
 }
 
 function formatDate(value) {
@@ -730,6 +812,24 @@ function getSlipStatusIcon(status) {
   if (status === 'Returned') return 'mdi-check-circle'
   if (status === 'Overdue') return 'mdi-alert-circle'
   return 'mdi-help-circle'
+}
+
+const qrDialog = ref(false)
+const qrLoading = ref(false)
+const qrData = ref(null)
+
+async function showPaymentQr(item) {
+  qrDialog.value = true
+  qrLoading.value = true
+  qrData.value = null
+  try {
+    const res = await borrowApi.getFinePaymentQr(item.id)
+    qrData.value = res.data
+  } catch (err) {
+    console.error('Không tải được mã QR thanh toán:', err)
+  } finally {
+    qrLoading.value = false
+  }
 }
 
 onMounted(loadMyBorrows)

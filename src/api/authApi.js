@@ -11,5 +11,13 @@ export const authApi = {
 
   me() {
     return api.get('/api/identity/auth/me')
+  },
+
+  changePassword(data) {
+    return api.put('/api/identity/auth/change-password', data)
+  },
+
+  updateProfile(data) {
+    return api.put('/api/identity/auth/me', data)
   }
 }
