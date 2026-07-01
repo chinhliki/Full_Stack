@@ -74,7 +74,7 @@ CirculationService/
 ### B. Tầng Cơ sở dữ liệu & Model (Data & Models)
 * **CirculationDbContext.cs**:
   * Kế thừa từ `DbContext` của Entity Framework Core.
-  * Sử dụng **Fluent API** trong phương thức `OnModelCreating` để thiết lập ràng buộc dữ liệu: độ dài tối đa thuộc tính, chỉ định kiểu dữ liệu tiền tệ (`decimal(18,2)`), thiết lập khóa ngoại liên kết giữa `Invoice` và `BorrowRecord` (hỗ trợ xóa Cascade khi phiếu mượn bị xóa).
+  * Sử dụng **Fluent API** trong phương thức `OnModelCreating` để thiết lập ràng buộc dữ liệu: độ thái tối đa thuộc tính, chỉ định kiểu dữ liệu tiền tệ (`decimal(18,2)`), thiết lập khóa ngoại liên kết giữa `Invoice` và `BorrowRecord` (hỗ trợ xóa Cascade khi phiếu mượn bị xóa).
   * Định nghĩa các **Index** trên các trường được tìm kiếm thường xuyên như `ReaderId`, `BookId`, `Status`, `BorrowRecordId` nhằm tối ưu tốc độ truy vấn cơ sở dữ liệu.
 * **BorrowRecord.cs**:
   * Đại diện cho bảng `BorrowRecords` trong cơ sở dữ liệu.
@@ -174,3 +174,105 @@ Hệ thống bảo vệ toàn bộ API thông qua token JWT được đăng ký 
   * Thực hiện thao tác phê duyệt yêu cầu mượn, tạo trực tiếp phiếu mượn, thực hiện thủ tục nhận sách trả, tính tiền phạt và xác nhận thanh toán tiền phạt.
 * **Admin (Quyền cao nhất)**:
   * Là người duy nhất có quyền cập nhật cấu hình quy tắc mượn trả tại runtime (`PUT /api/borrow-settings`).
+
+---
+
+## 🌐 5. Đặc tả Chi tiết API Endpoints cho Frontend
+
+Các API chạy trực tiếp tại địa chỉ cổng của Circulation Service (Ví dụ: `http://localhost:5002` hoặc địa chỉ IP deploy). Sử dụng Route Prefix trực tiếp `/api/...` (Ví dụ: `/api/borrows`, `/api/invoices`, `/api/borrow-settings`).
+
+### A. Quản lý Phiếu mượn (Borrows API)
+
+| STT | Method | URL Path | Roles | Chức năng (Description) |
+|---|---|---|---|---|
+| 1 | `GET` | `/api/borrows` | Admin, Librarian | Lấy danh sách toàn bộ phiếu mượn trả. Hỗ trợ query params lọc:<br> - `status`: Lọc trạng thái (`Requested`, `Borrowed`, `Returned`, `Rejected`) <br> - `search`: Tìm theo tên/mã độc giả, tên/mã sách, mã phiếu <br> - `fromDate`/`toDate`: Ngày mượn bắt đầu/kết thúc (theo ngày) |
+| 2 | `GET` | `/api/borrows/{id}` | Admin, Librarian, Reader | Lấy chi tiết phiếu mượn theo ID (Reader chỉ được xem phiếu của mình). |
+| 3 | `GET` | `/api/borrows/me` | Reader | Lấy danh sách phiếu mượn cá nhân của độc giả đang đăng nhập. |
+| 4 | `GET` | `/api/borrows/stats` | Admin, Librarian | Lấy số liệu thống kê tổng quan (Tổng số phiếu, Số sách đang mượn, Đã trả, Số phiếu phạt chưa trả, Số phiếu quá hạn, Tổng tiền phạt chưa nộp). |
+| 5 | `GET` | `/api/borrows/book/{bookId}` | Admin, Librarian | Tìm kiếm các phiếu mượn liên quan đến một mã sách cụ thể. |
+| 6 | `GET` | `/api/borrows/reader/{readerId}` | Admin, Librarian | Tìm kiếm các phiếu mượn liên quan đến một độc giả cụ thể. |
+| 7 | `GET` | `/api/borrows/overdue` | Admin, Librarian | Danh sách các phiếu mượn đang bị quá hạn trả sách (`Status == "Borrowed"` và `DueDate < Now`). |
+| 8 | `GET` | `/api/borrows/fines` | Admin, Librarian | Danh sách công nợ phí phạt chưa nộp của toàn bộ thư viện. |
+| 9 | `GET` | `/api/borrows/reader/{readerId}/fines` | Admin, Librarian | Danh sách công nợ phí phạt chưa nộp của một độc giả cụ thể. |
+| 10 | `POST` | `/api/borrows` | Admin, Librarian, Reader | Tạo phiếu mượn trực tiếp (Librarian) hoặc Độc giả tự đăng ký mượn sách (Reader). <br> *Yêu cầu truyền đầy đủ `readerId`.* |
+| 11 | `POST` | `/api/borrows/request` | Reader | Dành riêng cho Độc giả đăng ký mượn sách. Tự động lấy `readerId` từ token, trạng thái mặc định là `Requested`. |
+| 12 | `PUT` | `/api/borrows/{id}/approve` | Admin, Librarian | Duyệt yêu cầu mượn (chuyển trạng thái sang `Borrowed` và giảm số lượng sách khả dụng trong kho). |
+| 13 | `PUT` | `/api/borrows/{id}/reject` | Admin, Librarian | Từ chối yêu cầu mượn (chuyển trạng thái sang `Rejected`). |
+| 14 | `PUT` | `/api/borrows/{id}/return` | Admin, Librarian | Nhận trả sách. Backend tự động tính tiền phạt trễ hạn dựa trên cấu hình, cập nhật kho sách, và xuất hóa đơn trả. |
+| 15 | `GET` | `/api/borrows/{id}/payment-qr` | Admin, Librarian | Sinh URL mã QR VietQR để thanh toán khoản phạt quá hạn. |
+| 16 | `PUT` | `/api/borrows/{id}/pay-fine` | Admin, Librarian | Xác nhận độc giả đã thanh toán phí phạt (chuyển `IsFinePaid = true`). |
+
+### B. Quản lý Quy tắc mượn trả (Borrow Settings API)
+
+| STT | Method | URL Path | Roles | Chức năng (Description) |
+|---|---|---|---|---|
+| 17 | `GET` | `/api/borrow-settings` | Admin, Librarian | Xem các quy tắc mượn trả hiện tại (Số ngày mượn mặc định, giới hạn sách mượn...). |
+| 18 | `PUT` | `/api/borrow-settings` | Admin | Cập nhật quy tắc mượn trả (Số lượng sách tối đa được mượn, Đơn giá phạt trễ hạn). |
+
+### C. Quản lý Hóa đơn & Biên lai (Invoices API)
+
+| STT | Method | URL Path | Roles | Chức năng (Description) |
+|---|---|---|---|---|
+| 19 | `GET` | `/api/invoices` | Admin, Librarian | Lấy toàn bộ danh sách hóa đơn biên lai trong hệ thống. |
+| 20 | `GET` | `/api/invoices/{id}` | Admin, Librarian, Reader | Xem chi tiết hóa đơn theo ID (Reader chỉ được xem hóa đơn của mình). |
+| 21 | `GET` | `/api/invoices/me` | Reader | Xem danh sách hóa đơn cá nhân của độc giả đang đăng nhập. |
+| 22 | `GET` | `/api/invoices/reader/{readerId}` | Admin, Librarian | Xem danh sách hóa đơn của độc giả cụ thể. |
+| 23 | `GET` | `/api/invoices/borrow/{borrowRecordId}`| Admin, Librarian, Reader | Xem hóa đơn liên quan đến một phiếu mượn cụ thể. |
+
+### D. API Proxy dữ liệu trung gian (Proxy API)
+
+| STT | Method | URL Path | Roles | Chức năng (Description) |
+|---|---|---|---|---|
+| 24 | `GET` | `/api/proxy/books` | Admin, Librarian | Tìm kiếm thông tin sách từ Catalog Service (Nhóm 1). Hỗ trợ query: `search`, `onlyAvailable`. |
+| 25 | `GET` | `/api/proxy/readers` | Admin, Librarian | Tìm kiếm thông tin độc giả từ Identity Service (Nhóm 3). Hỗ trợ query: `search`. |
+
+---
+
+## 📦 6. Đặc tả cấu trúc dữ liệu truyền nhận (JSON DTOs)
+
+### A. Đối tượng Phiếu mượn (BorrowResponse)
+```json
+{
+  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "readerId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "readerName": "Nguyễn Văn A",
+  "bookId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "bookTitle": "Lập trình hướng đối tượng",
+  "borrowDate": "2026-06-28T13:30:00Z",
+  "dueDate": "2026-07-12T13:30:00Z",
+  "returnDate": null,
+  "status": "Borrowed",
+  "fineAmount": 0.0,
+  "isFinePaid": true,
+  "isOverdue": false
+}
+```
+
+### B. Duyệt/Trả/Thanh toán phạt
+
+* **Duyệt phiếu mượn (`PUT /api/borrows/{id}/approve`):**
+  ```json
+  {
+    "dueDate": "2026-07-15T10:00:00Z"
+  }
+  ```
+* **Trả sách (`PUT /api/borrows/{id}/return`):**
+  ```json
+  {
+    "returnDate": "2026-06-28T20:30:00Z"
+  }
+  ```
+* **VietQR thanh toán (`GET /api/borrows/{id}/payment-qr`):**
+  ```json
+  {
+    "borrowRecordId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "readerName": "Nguyễn Văn A",
+    "bookTitle": "Lập trình hướng đối tượng",
+    "fineAmount": 25000.0,
+    "description": "Phi phat muon sach 3FA85F64",
+    "bankId": "MB",
+    "accountNo": "0325442489",
+    "accountName": "THU VIEN SO DNU",
+    "qrImageUrl": "https://img.vietqr.io/image/MB-0325442489-compact2.png?amount=25000&addInfo=Phi%20phat%20muon%20sach%203FA85F64&accountName=THU%20VIEN%20SO%20DNU"
+  }
+  ```
